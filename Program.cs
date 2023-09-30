@@ -37,7 +37,7 @@ namespace bruhshot
             Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                g.CopyFromScreen(Point.Empty, Point.Empty, screenBounds.Size);
+                g.CopyFromScreen(curScreen.Bounds.Location, Point.Empty, screenBounds.Size);
             }
             return bitmap;
         }
@@ -48,6 +48,7 @@ namespace bruhshot
 
             var contextMenu = new ContextMenuStrip();
             ToolStripMenuItem titleThingy = new ToolStripMenuItem("Bruhshot", null, null, "Bruhshot");
+            titleThingy.Click += showInfo;
             contextMenu.Items.Add(titleThingy);
             contextMenu.Items.Add(new ToolStripSeparator());
 
@@ -70,6 +71,11 @@ namespace bruhshot
                 ContextMenuStrip = contextMenu,
                 Visible = true
             };
+        }
+
+        void showInfo(object? sender, EventArgs e) {
+            InfoForm form = new InfoForm(true);
+            form.Show();
         }
 
         void startScreenshottingSender(object? sender, EventArgs e)

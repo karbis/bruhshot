@@ -31,6 +31,9 @@ namespace bruhshot
         {
             components = new System.ComponentModel.Container();
             ToolBar = new Panel();
+            RedoButton = new Button();
+            UndoButton = new Button();
+            panel2 = new Panel();
             LineTool = new Button();
             TextTool = new Button();
             ClipboardButton = new Button();
@@ -40,9 +43,7 @@ namespace bruhshot
             FullImage = new PictureBox();
             InvisibleTextbox = new TextBox();
             toolTip1 = new ToolTip(components);
-            panel2 = new Panel();
-            UndoButton = new Button();
-            RedoButton = new Button();
+            ShapeTool = new Button();
             ToolBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)FullImage).BeginInit();
             SuspendLayout();
@@ -51,6 +52,7 @@ namespace bruhshot
             // 
             ToolBar.BackColor = Color.FromArgb(224, 224, 224);
             ToolBar.BorderStyle = BorderStyle.FixedSingle;
+            ToolBar.Controls.Add(ShapeTool);
             ToolBar.Controls.Add(RedoButton);
             ToolBar.Controls.Add(UndoButton);
             ToolBar.Controls.Add(panel2);
@@ -63,8 +65,41 @@ namespace bruhshot
             ToolBar.Location = new Point(518, 243);
             ToolBar.Margin = new Padding(4, 3, 4, 3);
             ToolBar.Name = "ToolBar";
-            ToolBar.Size = new Size(29, 211);
+            ToolBar.Size = new Size(29, 239);
             ToolBar.TabIndex = 1;
+            // 
+            // RedoButton
+            // 
+            RedoButton.FlatStyle = FlatStyle.Flat;
+            RedoButton.Image = Properties.Resources.RedoButton;
+            RedoButton.Location = new Point(-1, 146);
+            RedoButton.Margin = new Padding(4, 3, 4, 3);
+            RedoButton.Name = "RedoButton";
+            RedoButton.Size = new Size(29, 29);
+            RedoButton.TabIndex = 9;
+            toolTip1.SetToolTip(RedoButton, "Redo");
+            RedoButton.UseVisualStyleBackColor = true;
+            // 
+            // UndoButton
+            // 
+            UndoButton.FlatStyle = FlatStyle.Flat;
+            UndoButton.Image = Properties.Resources.UndoButton;
+            UndoButton.Location = new Point(-1, 118);
+            UndoButton.Margin = new Padding(4, 3, 4, 3);
+            UndoButton.Name = "UndoButton";
+            UndoButton.Size = new Size(29, 29);
+            UndoButton.TabIndex = 8;
+            toolTip1.SetToolTip(UndoButton, "Undo");
+            UndoButton.UseVisualStyleBackColor = true;
+            // 
+            // panel2
+            // 
+            panel2.BackColor = Color.FromArgb(130, 130, 130);
+            panel2.Location = new Point(2, 114);
+            panel2.Margin = new Padding(4, 3, 4, 3);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(23, 2);
+            panel2.TabIndex = 7;
             // 
             // LineTool
             // 
@@ -94,7 +129,7 @@ namespace bruhshot
             // 
             ClipboardButton.FlatStyle = FlatStyle.Flat;
             ClipboardButton.Image = Properties.Resources.ClipboardButton;
-            ClipboardButton.Location = new Point(-1, 153);
+            ClipboardButton.Location = new Point(-1, 181);
             ClipboardButton.Margin = new Padding(4, 3, 4, 3);
             ClipboardButton.Name = "ClipboardButton";
             ClipboardButton.Size = new Size(29, 29);
@@ -106,7 +141,7 @@ namespace bruhshot
             // 
             SaveButton.FlatStyle = FlatStyle.Flat;
             SaveButton.Image = Properties.Resources.SaveTool;
-            SaveButton.Location = new Point(-1, 181);
+            SaveButton.Location = new Point(-1, 209);
             SaveButton.Margin = new Padding(4, 3, 4, 3);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(29, 29);
@@ -129,7 +164,7 @@ namespace bruhshot
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(130, 130, 130);
-            panel1.Location = new Point(2, 149);
+            panel1.Location = new Point(2, 177);
             panel1.Margin = new Padding(4, 3, 4, 3);
             panel1.Name = "panel1";
             panel1.Size = new Size(23, 2);
@@ -158,38 +193,17 @@ namespace bruhshot
             InvisibleTextbox.TabIndex = 2;
             InvisibleTextbox.TabStop = false;
             // 
-            // panel2
+            // ShapeTool
             // 
-            panel2.BackColor = Color.FromArgb(130, 130, 130);
-            panel2.Location = new Point(2, 86);
-            panel2.Margin = new Padding(4, 3, 4, 3);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(23, 2);
-            panel2.TabIndex = 7;
-            // 
-            // UndoButton
-            // 
-            UndoButton.FlatStyle = FlatStyle.Flat;
-            UndoButton.Image = Properties.Resources.UndoButton;
-            UndoButton.Location = new Point(-1, 90);
-            UndoButton.Margin = new Padding(4, 3, 4, 3);
-            UndoButton.Name = "UndoButton";
-            UndoButton.Size = new Size(29, 29);
-            UndoButton.TabIndex = 8;
-            toolTip1.SetToolTip(UndoButton, "Undo");
-            UndoButton.UseVisualStyleBackColor = true;
-            // 
-            // RedoButton
-            // 
-            RedoButton.FlatStyle = FlatStyle.Flat;
-            RedoButton.Image = Properties.Resources.RedoButton;
-            RedoButton.Location = new Point(-1, 118);
-            RedoButton.Margin = new Padding(4, 3, 4, 3);
-            RedoButton.Name = "RedoButton";
-            RedoButton.Size = new Size(29, 29);
-            RedoButton.TabIndex = 9;
-            toolTip1.SetToolTip(RedoButton, "Copy to clipboard");
-            RedoButton.UseVisualStyleBackColor = true;
+            ShapeTool.FlatStyle = FlatStyle.Flat;
+            ShapeTool.Image = Properties.Resources.ShapeTool;
+            ShapeTool.Location = new Point(-1, 83);
+            ShapeTool.Margin = new Padding(4, 3, 4, 3);
+            ShapeTool.Name = "ShapeTool";
+            ShapeTool.Size = new Size(29, 29);
+            ShapeTool.TabIndex = 10;
+            toolTip1.SetToolTip(ShapeTool, "Shape");
+            ShapeTool.UseVisualStyleBackColor = true;
             // 
             // ScreenshotState
             // 
@@ -223,5 +237,6 @@ namespace bruhshot
         private Button RedoButton;
         private Button UndoButton;
         private Panel panel2;
+        private Button ShapeTool;
     }
 }

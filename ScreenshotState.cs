@@ -33,13 +33,20 @@ namespace bruhshot
 
         public ScreenshotState(Bitmap image)
         {
-            //TopMost = true;
+            TopMost = true;
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             KeyPreview = true;
 
             Screen? curScreen = Screen.FromPoint(Cursor.Position);
+
+            if (curScreen != null)
+            {
+                StartPosition = FormStartPosition.Manual;
+                Location = curScreen.WorkingArea.Location;
+            }
+
             Rectangle screenBounds = (curScreen == null) ? new Rectangle(0, 0, 0, 0) : curScreen.Bounds;
             Size = new Size(screenBounds.Width, screenBounds.Height);
             FullImage.MouseDown += TransparentMouseDown;
@@ -59,7 +66,7 @@ namespace bruhshot
             newImage = image;
             DoubleBuffered = true;
             ToolBar.Visible = false;
-            tools = new Button[] { PenTool, TextTool, LineTool };
+            tools = new Button[] { PenTool, TextTool, LineTool, ShapeTool };
 
             InvisibleTextbox.TextChanged += onTextChanged;
 
@@ -87,10 +94,6 @@ namespace bruhshot
                 size = crop.Size;
                 location = crop.Location;
             }
-            Boolean boundCheck(int x1, int y1)
-            {
-                return x1 > size.Width || x1 < 0 || y1 > size.Height || y1 < 0;
-            }
             Dictionary<Color, Brush> brushCache = new Dictionary<Color, Brush>();
             Brush getFromBrushCache(Color col)
             {
@@ -110,25 +113,40 @@ namespace bruhshot
                     case "Pen":
                         x = v["Location"].X - location.X;
                         y = v["Location"].Y - location.Y;
-                        if (boundCheck(x, y)) { return; }
-                        g.FillEllipse(getFromBrushCache(Color.Red), new Rectangle(new Point(x, y), new Size(5, 5)));
+                        g.FillEllipse(getFromBrushCache(v["Color"]), new Rectangle(new Point(x, y), new Size(v["Thickness"], v["Thickness"])));
                         break;
                     case "Text":
                         x = v["Location"].X - location.X;
                         y = v["Location"].Y - location.Y;
                         Font font = new Font("Arial", 12);
-                        g.DrawString(v["Text"], font, getFromBrushCache(Color.Red), new Point(x, y));
+                        g.DrawString(v["Text"], font, getFromBrushCache(v["Color"]), new Point(x, y));
                         font.Dispose();
                         break;
                     case "Line":
-                        using (Pen pen = new Pen(getFromBrushCache(Color.Red)))
+                        using (Pen pen = new Pen(getFromBrushCache(v["Color"])))
                         {
-                            pen.Width = 4f;
+                            pen.Width = v["Thickness"];
                             x = v["StartLocation"].X - location.X;
                             y = v["StartLocation"].Y - location.Y;
                             int x2 = v["EndLocation"].X - location.X;
                             int y2 = v["EndLocation"].Y - location.Y;
                             g.DrawLine(pen, new Point(x, y), new Point(x2, y2));
+                        }
+                        break;
+                    case "Shape":
+                        using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
+                            pen.Width = v["Thickness"];
+                            x = v["StartLocation"].X - location.X;
+                            y = v["StartLocation"].Y - location.Y;
+                            int x2 = v["EndLocation"].X - location.X-x;
+                            int y2 = v["EndLocation"].Y - location.Y-y;
+                            Pen a = pen;
+                            Rectangle b = correctRectangle(new Rectangle(new Point(x, y), new Size(x2, y2)));
+                            switch (v["Shape"]) {
+                                case "Square":
+                                    g.DrawRectangle(a,b);
+                                    break;
+                            }
                         }
                         break;
                     default:
@@ -191,25 +209,34 @@ namespace bruhshot
                     promptToSave();
                     break;
                 case Keys.Z:
-                    edits = undoManager.undo();
-                    FullImage.Invalidate();
+                    undoButton();
                     break;
                 case Keys.Y:
-                    edits = undoManager.redo();
-                    FullImage.Invalidate();
+                    redoButton();
                     break;
                 default:
                     break;
             }
         }
-        
-        void undoButtonClicked(object? sender, EventArgs e) {
+
+        void undoButton() {
+            if (InvisibleTextbox.Focused) { return; }
             edits = undoManager.undo();
             FullImage.Invalidate();
         }
-        void redoButtonClicked(object? sender, EventArgs e) {
+        void redoButton() {
+            if (InvisibleTextbox.Focused) { return; }
             edits = undoManager.redo();
             FullImage.Invalidate();
+        }
+
+        void undoButtonClicked(object? sender, EventArgs e)
+        {
+            undoButton();
+        }
+        void redoButtonClicked(object? sender, EventArgs e)
+        {
+            redoButton();
         }
 
         void TransparentMouseDown(object? sender, MouseEventArgs e)
@@ -257,7 +284,7 @@ namespace bruhshot
             double amountOfDots = Math.Max(1, Math.Round(Math.Abs(Math.Sqrt(pointAToPointB.X * pointAToPointB.X + pointAToPointB.Y * pointAToPointB.Y)) / (5 / Math.PI)));
             for (int i = 0; i < amountOfDots; i++)
             {
-                edits.Add(new Dictionary<string, dynamic> { { "Type", "Pen" }, { "Location", lerpPoint(lastClickPointTools, location, i / amountOfDots) } });
+                edits.Add(new Dictionary<string, dynamic> { { "Type", "Pen" }, { "Location", lerpPoint(lastClickPointTools, location, i / amountOfDots) }, { "Color", Color.Red }, { "Thickness", 4 } });
             }
             FullImage.Invalidate();
 
@@ -267,21 +294,22 @@ namespace bruhshot
         {
             infoPanelDown = true;
             lastClickPointTools = e.Location;
-            switch (currentTool)
-            {
+            switch (currentTool) {
                 case "Pen":
                     drawPen(e.Location);
                     break;
                 case "Text":
-                    if (!InvisibleTextbox.Focused)
-                    {
+                    if (!InvisibleTextbox.Focused) {
                         InvisibleTextbox.Focus();
                         InvisibleTextbox.Text = "";
-                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location } });
+                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location }, { "Color", Color.Red } });
                     }
                     break;
                 case "Line":
-                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location } });
+                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Color", Color.Red }, { "Thickness", 4 } });
+                    break;
+                case "Shape":
+                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Shape" }, { "Shape", "Square" }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Filled", false }, { "Color", Color.Red }, { "Thickness", 4 } });
                     break;
                 default:
                     break;
@@ -291,7 +319,6 @@ namespace bruhshot
         {
             if (currentTool != "None" && infoPanelDown)
             {
-                Trace.WriteLine("History");
                 undoManager.makeWaypoint(edits);
             }
             infoPanelDown = false;
@@ -321,6 +348,10 @@ namespace bruhshot
                     FullImage.Invalidate();
                     break;
                 case "Line":
+                    edits[edits.Count - 1]["EndLocation"] = e.Location;
+                    FullImage.Invalidate();
+                    break;
+                case "Shape":
                     edits[edits.Count - 1]["EndLocation"] = e.Location;
                     FullImage.Invalidate();
                     break;
