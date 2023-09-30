@@ -24,39 +24,42 @@ namespace bruhshot
         Point endingClickPoint = new Point(-1, 0);
         Image newImage;
         bool mouseDownTransparent = false;
-        List<dynamic> edits = new List<dynamic>();
+        List<Dictionary<string, dynamic>> edits = new List<Dictionary<string, dynamic>>();
         bool infoPanelDown = false;
         Point lastClickPointTools;
         string currentTool = "None";
-        System.Windows.Forms.Button[] tools;
+        Button[] tools;
+        UndoManager undoManager = new UndoManager();
 
         public ScreenshotState(Bitmap image)
         {
-            TopMost = true;
+            //TopMost = true;
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             KeyPreview = true;
 
-
-            Rectangle screenBounds = (Screen.PrimaryScreen == null) ? new Rectangle(0, 0, 0, 0) : Screen.PrimaryScreen.Bounds;
+            Screen? curScreen = Screen.FromPoint(Cursor.Position);
+            Rectangle screenBounds = (curScreen == null) ? new Rectangle(0, 0, 0, 0) : curScreen.Bounds;
             Size = new Size(screenBounds.Width, screenBounds.Height);
             FullImage.MouseDown += TransparentMouseDown;
             FullImage.MouseMove += TransparentMouseMove;
             FullImage.MouseUp += TransparentMouseUp;
             KeyDown += ScreenshotState_KeyDown;
             FormClosed += onFormClosed;
-            SaveButton.Click += promptToSave;
+            SaveButton.Click += promptToSaveSender;
             ClipboardButton.Click += copyToClipboardSender;
             InvisibleTextbox.GotFocus += invalidateImage;
             InvisibleTextbox.LostFocus += invalidateImage;
+            UndoButton.Click += undoButtonClicked;
+            RedoButton.Click += redoButtonClicked;
 
             FullImage.Paint += imageDarken;
             FullImage.Image = image;
             newImage = image;
             DoubleBuffered = true;
             ToolBar.Visible = false;
-            tools = new System.Windows.Forms.Button[] { PenTool, TextTool };
+            tools = new Button[] { PenTool, TextTool, LineTool };
 
             InvisibleTextbox.TextChanged += onTextChanged;
 
@@ -68,6 +71,8 @@ namespace bruhshot
                 }
                 v.Click += handleClick;
             }
+
+            undoManager.makeWaypoint(edits);
 
             //Opacity = 0.25;
         }
@@ -98,22 +103,33 @@ namespace bruhshot
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
             int x, y;
-            foreach (dynamic v in edits)
+            foreach (Dictionary<string, dynamic> v in edits)
             {
-                switch (v.Type)
+                switch (v["Type"])
                 {
                     case "Pen":
-                        x = v.Location.X - location.X;
-                        y = v.Location.Y - location.Y;
+                        x = v["Location"].X - location.X;
+                        y = v["Location"].Y - location.Y;
                         if (boundCheck(x, y)) { return; }
                         g.FillEllipse(getFromBrushCache(Color.Red), new Rectangle(new Point(x, y), new Size(5, 5)));
                         break;
                     case "Text":
-                        x = v.Location.X - location.X;
-                        y = v.Location.Y - location.Y;
+                        x = v["Location"].X - location.X;
+                        y = v["Location"].Y - location.Y;
                         Font font = new Font("Arial", 12);
-                        g.DrawString(v.Text, font, getFromBrushCache(Color.Red), new Point(x, y));
+                        g.DrawString(v["Text"], font, getFromBrushCache(Color.Red), new Point(x, y));
                         font.Dispose();
+                        break;
+                    case "Line":
+                        using (Pen pen = new Pen(getFromBrushCache(Color.Red)))
+                        {
+                            pen.Width = 4f;
+                            x = v["StartLocation"].X - location.X;
+                            y = v["StartLocation"].Y - location.Y;
+                            int x2 = v["EndLocation"].X - location.X;
+                            int y2 = v["EndLocation"].Y - location.Y;
+                            g.DrawLine(pen, new Point(x, y), new Point(x2, y2));
+                        }
                         break;
                     default:
                         break;
@@ -165,11 +181,37 @@ namespace bruhshot
 
         void ScreenshotState_KeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
+            if (!e.Control) { return; }
+            switch (e.KeyCode)
             {
-                copyToClipboard();
+                case Keys.C:
+                    copyToClipboard();
+                    break;
+                case Keys.S:
+                    promptToSave();
+                    break;
+                case Keys.Z:
+                    edits = undoManager.undo();
+                    FullImage.Invalidate();
+                    break;
+                case Keys.Y:
+                    edits = undoManager.redo();
+                    FullImage.Invalidate();
+                    break;
+                default:
+                    break;
             }
         }
+        
+        void undoButtonClicked(object? sender, EventArgs e) {
+            edits = undoManager.undo();
+            FullImage.Invalidate();
+        }
+        void redoButtonClicked(object? sender, EventArgs e) {
+            edits = undoManager.redo();
+            FullImage.Invalidate();
+        }
+
         void TransparentMouseDown(object? sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) { return; }
@@ -186,7 +228,7 @@ namespace bruhshot
         void TransparentMouseMove(object? sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) { return; }
-            if (rectangleContains(e.Location, getCropRectangle()))
+            if (rectangleContains(e.Location, getCropRectangle()) && !mouseDownTransparent)
             {
                 InfoPanelMove(sender, e);
                 return;
@@ -215,7 +257,7 @@ namespace bruhshot
             double amountOfDots = Math.Max(1, Math.Round(Math.Abs(Math.Sqrt(pointAToPointB.X * pointAToPointB.X + pointAToPointB.Y * pointAToPointB.Y)) / (5 / Math.PI)));
             for (int i = 0; i < amountOfDots; i++)
             {
-                edits.Add(new { Type = "Pen", Location = lerpPoint(lastClickPointTools, location, i / amountOfDots) });
+                edits.Add(new Dictionary<string, dynamic> { { "Type", "Pen" }, { "Location", lerpPoint(lastClickPointTools, location, i / amountOfDots) } });
             }
             FullImage.Invalidate();
 
@@ -235,8 +277,11 @@ namespace bruhshot
                     {
                         InvisibleTextbox.Focus();
                         InvisibleTextbox.Text = "";
-                        edits.Add(new { Type = "Text", Text = "", Location = e.Location });
+                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location } });
                     }
+                    break;
+                case "Line":
+                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location } });
                     break;
                 default:
                     break;
@@ -244,11 +289,17 @@ namespace bruhshot
         }
         void InfoPanelUp(object? sender, MouseEventArgs e)
         {
+            if (currentTool != "None" && infoPanelDown)
+            {
+                Trace.WriteLine("History");
+                undoManager.makeWaypoint(edits);
+            }
             infoPanelDown = false;
         }
         void InfoPanelMove(object? sender, MouseEventArgs e)
         {
             if (!infoPanelDown) { return; }
+            Point offset;
             switch (currentTool)
             {
                 case "Pen":
@@ -257,10 +308,21 @@ namespace bruhshot
                 case "Text":
                     if (InvisibleTextbox.Focused)
                     {
-                        edits.Add(new { Type = "Text", Text = InvisibleTextbox.Text, Location = e.Location });
-                        edits.RemoveAt(edits.Count - 2);
+                        offset = new Point(e.Location.X - lastClickPointTools.X, e.Location.Y - lastClickPointTools.Y);
+                        Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
+                        lastIndex["Location"] = new Point(lastIndex["Location"].X + offset.X, lastIndex["Location"].Y + offset.Y);
                         FullImage.Invalidate();
                     }
+                    break;
+                case "None":
+                    offset = new Point(e.Location.X - lastClickPointTools.X, e.Location.Y - lastClickPointTools.Y);
+                    startingClickPoint = new Point(Math.Clamp(startingClickPoint.X + offset.X, 0, Size.Width), Math.Clamp(startingClickPoint.Y + offset.Y, 0, Size.Height));
+                    endingClickPoint = new Point(Math.Clamp(endingClickPoint.X + offset.X, 0, Size.Width), Math.Clamp(endingClickPoint.Y + offset.Y, 0, Size.Height));
+                    FullImage.Invalidate();
+                    break;
+                case "Line":
+                    edits[edits.Count - 1]["EndLocation"] = e.Location;
+                    FullImage.Invalidate();
                     break;
                 default:
                     break;
@@ -317,7 +379,7 @@ namespace bruhshot
 
                 if (InvisibleTextbox.Focused)
                 {
-                    Point textLocation = edits[edits.Count - 1].Location;
+                    Point textLocation = edits[edits.Count - 1]["Location"];
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, 100, 50));
@@ -329,6 +391,14 @@ namespace bruhshot
             applyImageEdits(e.Graphics, false);
             int offsetX = regionRectangle.Width + 5;
             int offsetY = -2;
+            if (regionRectangle.Bottom + 5 > Size.Height)
+            {
+                offsetY = -ToolBar.Size.Height - 5;
+                if (regionRectangle.Y + offsetY < 0)
+                {
+                    offsetY = Size.Height - 5 - ToolBar.Size.Height;
+                }
+            }
             if (regionRectangle.Right + 30 > Size.Width)
             {
                 offsetX = -30;
@@ -336,14 +406,6 @@ namespace bruhshot
                 {
                     offsetY = regionRectangle.Height + 5;
                     offsetX = Size.Width - 30;
-                }
-            }
-            if (regionRectangle.Bottom + 5 > Size.Height)
-            {
-                offsetY = -ToolBar.Size.Height - 5;
-                if (regionRectangle.Y + offsetY < 0)
-                {
-                    offsetY = Size.Height - 5 - ToolBar.Size.Height;
                 }
             }
             ToolBar.Location = new Point(regionRectangle.X + offsetX, regionRectangle.Y + offsetY);
@@ -354,7 +416,7 @@ namespace bruhshot
             newImage.Dispose();
         }
 
-        void promptToSave(object? sender, EventArgs e)
+        void promptToSave()
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
@@ -371,6 +433,11 @@ namespace bruhshot
                 newImage.Save(saveFileDialog.FileName);
                 Close();
             }
+        }
+
+        void promptToSaveSender(object? sender, EventArgs e)
+        {
+            promptToSave();
         }
 
         void switchMode(string newMode)
@@ -396,9 +463,7 @@ namespace bruhshot
         void onTextChanged(object? sender, EventArgs e)
         {
             if (sender == null) { return; }
-            dynamic lastIndex = edits[edits.Count - 1];
-            edits.Add(new { Type = "Text", Text = ((System.Windows.Forms.TextBox)sender).Text, Location = lastIndex.Location });
-            edits.RemoveAt(edits.Count - 2);
+            edits[edits.Count - 1]["Text"] = ((System.Windows.Forms.TextBox)sender).Text;
             FullImage.Invalidate();
         }
 

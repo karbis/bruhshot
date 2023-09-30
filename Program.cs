@@ -31,8 +31,9 @@ namespace bruhshot
 
         Bitmap takeScreenshot()
         {
-            if (Screen.PrimaryScreen == null) { return new Bitmap(1,1); }
-            Rectangle screenBounds = Screen.PrimaryScreen.Bounds;
+            Screen? curScreen = Screen.FromPoint(Cursor.Position);
+            if (curScreen == null) { return new Bitmap(1,1); }
+            Rectangle screenBounds = curScreen.Bounds;
             Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
             using (Graphics g = Graphics.FromImage(bitmap))
             {

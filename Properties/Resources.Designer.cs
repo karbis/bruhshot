@@ -83,9 +83,29 @@ namespace bruhshot.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LineTool {
+            get {
+                object obj = ResourceManager.GetObject("LineTool", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap PenTool {
             get {
                 object obj = ResourceManager.GetObject("PenTool", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RedoButton {
+            get {
+                object obj = ResourceManager.GetObject("RedoButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -106,6 +126,16 @@ namespace bruhshot.Properties {
         internal static System.Drawing.Bitmap TextTool {
             get {
                 object obj = ResourceManager.GetObject("TextTool", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UndoButton {
+            get {
+                object obj = ResourceManager.GetObject("UndoButton", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
