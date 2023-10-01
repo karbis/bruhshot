@@ -7,7 +7,5 @@ A ripoff of Lightshot, made in winforms, sadly.
 - Ctrl+C to copy screenshot to clipboard
 - Ctrl+S to save screenshot
 - Ctrl+Z/Y to undo/redo
-
-
-# Notes
-Settings soon  probably
+- WASD to resize crop region
+- Ctrl+A to select entire screen
