@@ -74,7 +74,7 @@ namespace bruhshot
         }
 
         void showInfo(object? sender, EventArgs e) {
-            InfoForm form = new InfoForm(true);
+            InfoForm form = new InfoForm();
             form.Show();
         }
 
@@ -101,20 +101,13 @@ namespace bruhshot
             {
                 // Now you can access both, the key and virtual code
                 Keys loggedKey = e.KeyboardData.Key;
-                int loggedVkCode = e.KeyboardData.VirtualCode;
-                switch (loggedKey.ToString().ToLower())
-                {
-                    case "f2":
-                        startScreenshotting();
-                        break;
-                    case "escape":
-                        if (screenshotState != null && !screenshotState.IsDisposed)
-                        {
-                            screenshotState.Close();
-                        }
-                        break;
-                    default:
-                        break;
+                string key = loggedKey.ToString().ToLower();
+                if (key == Settings.Default.Keybind.ToLower()) {
+                    startScreenshotting();
+                } else if (key == "escape") {
+                    if (screenshotState != null && !screenshotState.IsDisposed) {
+                        screenshotState.Close();
+                    }
                 }
             }
         }

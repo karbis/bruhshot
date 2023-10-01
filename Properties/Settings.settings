@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="bruhshot.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Color" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="Thickness" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="Shape" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Square</Value>
+    </Setting>
+    <Setting Name="FilledShape" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TextSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">12</Value>
+    </Setting>
+    <Setting Name="Keybind" Type="System.String" Scope="User">
+      <Value Profile="(Default)">F2</Value>
+    </Setting>
+    <Setting Name="ThemeColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">224, 224, 224</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

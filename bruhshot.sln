@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bruhshot", "bruhshot.csproj", "{320071CC-9B3C-430B-B046-28F1C7B020F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bruhshot", "bruhshot.csproj", "{320071CC-9B3C-430B-B046-28F1C7B020F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,8 +13,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{320071CC-9B3C-430B-B046-28F1C7B020F3}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

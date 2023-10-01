@@ -1,7 +1,5 @@
-﻿namespace bruhshot
-{
-    partial class InfoForm
-    {
+﻿namespace bruhshot {
+    partial class InfoForm {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -11,10 +9,8 @@
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -26,8 +22,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InfoForm));
             panel1 = new Panel();
             BackButton = new Button();
@@ -36,14 +31,7 @@
             panel2 = new Panel();
             label1 = new Label();
             label2 = new Label();
-            tabControl1 = new TabControl();
-            SettingsTab = new TabPage();
-            label4 = new Label();
-            InfoTab = new TabPage();
             panel1.SuspendLayout();
-            tabControl1.SuspendLayout();
-            SettingsTab.SuspendLayout();
-            InfoTab.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -53,14 +41,14 @@
             panel1.Controls.Add(label3);
             panel1.Controls.Add(linkLabel1);
             panel1.Dock = DockStyle.Bottom;
-            panel1.Location = new Point(3, 127);
+            panel1.Location = new Point(0, 126);
             panel1.Name = "panel1";
-            panel1.Size = new Size(363, 100);
+            panel1.Size = new Size(377, 100);
             panel1.TabIndex = 1;
             // 
             // BackButton
             // 
-            BackButton.Location = new Point(283, 72);
+            BackButton.Location = new Point(290, 65);
             BackButton.Name = "BackButton";
             BackButton.Size = new Size(75, 23);
             BackButton.TabIndex = 2;
@@ -115,73 +103,26 @@
             label2.Name = "label2";
             label2.Size = new Size(39, 21);
             label2.TabIndex = 4;
-            label2.Text = "v1.3";
-            // 
-            // tabControl1
-            // 
-            tabControl1.Controls.Add(SettingsTab);
-            tabControl1.Controls.Add(InfoTab);
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.ImeMode = ImeMode.NoControl;
-            tabControl1.Location = new Point(0, 0);
-            tabControl1.Name = "tabControl1";
-            tabControl1.Padding = new Point(0, 0);
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(377, 258);
-            tabControl1.TabIndex = 5;
-            // 
-            // SettingsTab
-            // 
-            SettingsTab.Controls.Add(label4);
-            SettingsTab.Location = new Point(4, 24);
-            SettingsTab.Name = "SettingsTab";
-            SettingsTab.Padding = new Padding(3);
-            SettingsTab.Size = new Size(369, 230);
-            SettingsTab.TabIndex = 1;
-            SettingsTab.Text = "Settings";
-            SettingsTab.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(14, 15);
-            label4.Name = "label4";
-            label4.Size = new Size(54, 15);
-            label4.TabIndex = 0;
-            label4.Text = "soon:tm:";
-            // 
-            // InfoTab
-            // 
-            InfoTab.Controls.Add(label2);
-            InfoTab.Controls.Add(label1);
-            InfoTab.Controls.Add(panel2);
-            InfoTab.Controls.Add(panel1);
-            InfoTab.Location = new Point(4, 24);
-            InfoTab.Name = "InfoTab";
-            InfoTab.Padding = new Padding(3);
-            InfoTab.Size = new Size(369, 230);
-            InfoTab.TabIndex = 0;
-            InfoTab.Text = "Info";
-            InfoTab.UseVisualStyleBackColor = true;
+            label2.Text = "v1.4";
             // 
             // InfoForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(377, 258);
-            Controls.Add(tabControl1);
+            ClientSize = new Size(377, 226);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(panel2);
+            Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "InfoForm";
-            Text = "Settings";
+            Text = "Info";
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            tabControl1.ResumeLayout(false);
-            SettingsTab.ResumeLayout(false);
-            SettingsTab.PerformLayout();
-            InfoTab.ResumeLayout(false);
-            InfoTab.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -192,9 +133,5 @@
         private Label label3;
         private LinkLabel linkLabel1;
         private Button BackButton;
-        private TabControl tabControl1;
-        private TabPage InfoTab;
-        private TabPage SettingsTab;
-        private Label label4;
     }
 }

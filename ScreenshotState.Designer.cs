@@ -1,8 +1,6 @@
 ﻿
-namespace bruhshot
-{
-    partial class ScreenshotState
-    {
+namespace bruhshot {
+    partial class ScreenshotState {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -12,10 +10,8 @@ namespace bruhshot
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -27,23 +23,25 @@ namespace bruhshot
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenshotState));
             ToolBar = new Panel();
+            CloseButton = new Button();
+            SettingsButton = new Button();
+            ShapeTool = new Button();
             RedoButton = new Button();
             UndoButton = new Button();
-            panel2 = new Panel();
+            Seperator1 = new Panel();
             LineTool = new Button();
             TextTool = new Button();
             ClipboardButton = new Button();
             SaveButton = new Button();
             PenTool = new Button();
-            panel1 = new Panel();
+            Seperator2 = new Panel();
             FullImage = new PictureBox();
             InvisibleTextbox = new TextBox();
             toolTip1 = new ToolTip(components);
-            ShapeTool = new Button();
             ToolBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)FullImage).BeginInit();
             SuspendLayout();
@@ -52,27 +50,65 @@ namespace bruhshot
             // 
             ToolBar.BackColor = Color.FromArgb(224, 224, 224);
             ToolBar.BorderStyle = BorderStyle.FixedSingle;
+            ToolBar.Controls.Add(CloseButton);
+            ToolBar.Controls.Add(SettingsButton);
             ToolBar.Controls.Add(ShapeTool);
             ToolBar.Controls.Add(RedoButton);
             ToolBar.Controls.Add(UndoButton);
-            ToolBar.Controls.Add(panel2);
+            ToolBar.Controls.Add(Seperator1);
             ToolBar.Controls.Add(LineTool);
             ToolBar.Controls.Add(TextTool);
             ToolBar.Controls.Add(ClipboardButton);
             ToolBar.Controls.Add(SaveButton);
             ToolBar.Controls.Add(PenTool);
-            ToolBar.Controls.Add(panel1);
-            ToolBar.Location = new Point(518, 243);
+            ToolBar.Controls.Add(Seperator2);
+            ToolBar.Location = new Point(518, 150);
             ToolBar.Margin = new Padding(4, 3, 4, 3);
             ToolBar.Name = "ToolBar";
-            ToolBar.Size = new Size(29, 239);
+            ToolBar.Size = new Size(29, 295);
             ToolBar.TabIndex = 1;
+            // 
+            // CloseButton
+            // 
+            CloseButton.FlatStyle = FlatStyle.Flat;
+            CloseButton.Image = Properties.Resources.CloseButton;
+            CloseButton.Location = new Point(-1, 265);
+            CloseButton.Margin = new Padding(4, 3, 4, 3);
+            CloseButton.Name = "CloseButton";
+            CloseButton.Size = new Size(29, 29);
+            CloseButton.TabIndex = 12;
+            toolTip1.SetToolTip(CloseButton, "Cancel");
+            CloseButton.UseVisualStyleBackColor = true;
+            // 
+            // SettingsButton
+            // 
+            SettingsButton.FlatStyle = FlatStyle.Flat;
+            SettingsButton.Image = Properties.Resources.SettingsTool;
+            SettingsButton.Location = new Point(-1, 111);
+            SettingsButton.Margin = new Padding(4, 3, 4, 3);
+            SettingsButton.Name = "SettingsButton";
+            SettingsButton.Size = new Size(29, 29);
+            SettingsButton.TabIndex = 11;
+            toolTip1.SetToolTip(SettingsButton, "Settings");
+            SettingsButton.UseVisualStyleBackColor = true;
+            // 
+            // ShapeTool
+            // 
+            ShapeTool.FlatStyle = FlatStyle.Flat;
+            ShapeTool.Image = Properties.Resources.ShapeTool;
+            ShapeTool.Location = new Point(-1, 83);
+            ShapeTool.Margin = new Padding(0);
+            ShapeTool.Name = "ShapeTool";
+            ShapeTool.Size = new Size(29, 29);
+            ShapeTool.TabIndex = 10;
+            toolTip1.SetToolTip(ShapeTool, "Shape");
+            ShapeTool.UseVisualStyleBackColor = true;
             // 
             // RedoButton
             // 
             RedoButton.FlatStyle = FlatStyle.Flat;
             RedoButton.Image = Properties.Resources.RedoButton;
-            RedoButton.Location = new Point(-1, 146);
+            RedoButton.Location = new Point(-1, 174);
             RedoButton.Margin = new Padding(4, 3, 4, 3);
             RedoButton.Name = "RedoButton";
             RedoButton.Size = new Size(29, 29);
@@ -84,7 +120,7 @@ namespace bruhshot
             // 
             UndoButton.FlatStyle = FlatStyle.Flat;
             UndoButton.Image = Properties.Resources.UndoButton;
-            UndoButton.Location = new Point(-1, 118);
+            UndoButton.Location = new Point(-1, 146);
             UndoButton.Margin = new Padding(4, 3, 4, 3);
             UndoButton.Name = "UndoButton";
             UndoButton.Size = new Size(29, 29);
@@ -92,14 +128,14 @@ namespace bruhshot
             toolTip1.SetToolTip(UndoButton, "Undo");
             UndoButton.UseVisualStyleBackColor = true;
             // 
-            // panel2
+            // Seperator1
             // 
-            panel2.BackColor = Color.FromArgb(130, 130, 130);
-            panel2.Location = new Point(2, 114);
-            panel2.Margin = new Padding(4, 3, 4, 3);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(23, 2);
-            panel2.TabIndex = 7;
+            Seperator1.BackColor = Color.FromArgb(130, 130, 130);
+            Seperator1.Location = new Point(2, 142);
+            Seperator1.Margin = new Padding(4, 3, 4, 3);
+            Seperator1.Name = "Seperator1";
+            Seperator1.Size = new Size(23, 2);
+            Seperator1.TabIndex = 7;
             // 
             // LineTool
             // 
@@ -129,7 +165,7 @@ namespace bruhshot
             // 
             ClipboardButton.FlatStyle = FlatStyle.Flat;
             ClipboardButton.Image = Properties.Resources.ClipboardButton;
-            ClipboardButton.Location = new Point(-1, 181);
+            ClipboardButton.Location = new Point(-1, 209);
             ClipboardButton.Margin = new Padding(4, 3, 4, 3);
             ClipboardButton.Name = "ClipboardButton";
             ClipboardButton.Size = new Size(29, 29);
@@ -141,7 +177,7 @@ namespace bruhshot
             // 
             SaveButton.FlatStyle = FlatStyle.Flat;
             SaveButton.Image = Properties.Resources.SaveTool;
-            SaveButton.Location = new Point(-1, 209);
+            SaveButton.Location = new Point(-1, 237);
             SaveButton.Margin = new Padding(4, 3, 4, 3);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(29, 29);
@@ -161,14 +197,14 @@ namespace bruhshot
             toolTip1.SetToolTip(PenTool, "Pen");
             PenTool.UseVisualStyleBackColor = true;
             // 
-            // panel1
+            // Seperator2
             // 
-            panel1.BackColor = Color.FromArgb(130, 130, 130);
-            panel1.Location = new Point(2, 177);
-            panel1.Margin = new Padding(4, 3, 4, 3);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(23, 2);
-            panel1.TabIndex = 2;
+            Seperator2.BackColor = Color.FromArgb(130, 130, 130);
+            Seperator2.Location = new Point(2, 205);
+            Seperator2.Margin = new Padding(4, 3, 4, 3);
+            Seperator2.Name = "Seperator2";
+            Seperator2.Size = new Size(23, 2);
+            Seperator2.TabIndex = 2;
             // 
             // FullImage
             // 
@@ -185,6 +221,7 @@ namespace bruhshot
             // 
             InvisibleTextbox.AcceptsReturn = true;
             InvisibleTextbox.AcceptsTab = true;
+            InvisibleTextbox.Enabled = false;
             InvisibleTextbox.Location = new Point(-1167, -1154);
             InvisibleTextbox.Margin = new Padding(4, 3, 4, 3);
             InvisibleTextbox.Multiline = true;
@@ -192,18 +229,6 @@ namespace bruhshot
             InvisibleTextbox.Size = new Size(116, 22);
             InvisibleTextbox.TabIndex = 2;
             InvisibleTextbox.TabStop = false;
-            // 
-            // ShapeTool
-            // 
-            ShapeTool.FlatStyle = FlatStyle.Flat;
-            ShapeTool.Image = Properties.Resources.ShapeTool;
-            ShapeTool.Location = new Point(-1, 83);
-            ShapeTool.Margin = new Padding(4, 3, 4, 3);
-            ShapeTool.Name = "ShapeTool";
-            ShapeTool.Size = new Size(29, 29);
-            ShapeTool.TabIndex = 10;
-            toolTip1.SetToolTip(ShapeTool, "Shape");
-            ShapeTool.UseVisualStyleBackColor = true;
             // 
             // ScreenshotState
             // 
@@ -213,9 +238,10 @@ namespace bruhshot
             Controls.Add(InvisibleTextbox);
             Controls.Add(ToolBar);
             Controls.Add(FullImage);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 3, 4, 3);
             Name = "ScreenshotState";
-            Text = "ScreenshotState";
+            Text = "Screenshot";
             ToolBar.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)FullImage).EndInit();
             ResumeLayout(false);
@@ -228,7 +254,7 @@ namespace bruhshot
         private Panel ToolBar;
         private Button PenTool;
         private Button SaveButton;
-        private Panel panel1;
+        private Panel Seperator2;
         private Button ClipboardButton;
         private Button TextTool;
         private TextBox InvisibleTextbox;
@@ -236,7 +262,9 @@ namespace bruhshot
         private Button LineTool;
         private Button RedoButton;
         private Button UndoButton;
-        private Panel panel2;
+        private Panel Seperator1;
         private Button ShapeTool;
+        private Button SettingsButton;
+        private Button CloseButton;
     }
 }
