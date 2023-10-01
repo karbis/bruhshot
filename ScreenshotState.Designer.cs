@@ -241,6 +241,7 @@ namespace bruhshot {
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 3, 4, 3);
             Name = "ScreenshotState";
+            ShowInTaskbar = false;
             Text = "Screenshot";
             ToolBar.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)FullImage).EndInit();

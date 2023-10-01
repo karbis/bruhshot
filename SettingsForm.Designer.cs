@@ -86,7 +86,6 @@
             // ThicknessValue
             // 
             ThicknessValue.BorderStyle = BorderStyle.FixedSingle;
-            ThicknessValue.DecimalPlaces = 0;
             ThicknessValue.Location = new Point(76, 40);
             ThicknessValue.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
             ThicknessValue.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -182,8 +181,12 @@
             Controls.Add(ColorShowcasePanel);
             Controls.Add(button1);
             Controls.Add(label1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "SettingsForm";
+            StartPosition = FormStartPosition.Manual;
             Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)ThicknessValue).EndInit();
             ((System.ComponentModel.ISupportInitialize)TextSizeChanger).EndInit();

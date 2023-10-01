@@ -190,7 +190,13 @@ namespace bruhshot {
             cropImage();
             MemoryStream pngConverter = new MemoryStream();
             newImage.Save(pngConverter, System.Drawing.Imaging.ImageFormat.Png);
-            Clipboard.SetImage(Image.FromStream(pngConverter));
+            try {
+                Clipboard.SetImage(Image.FromStream(pngConverter));
+            }
+            catch (Exception e) {
+                MessageBox.Show("Failed to copy image to clipboard\n\n" + e, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             pngConverter.Dispose();
             newImage.Dispose();
@@ -325,7 +331,7 @@ namespace bruhshot {
                     break;
                 case "Text":
                     bool allowed = true;
-                    Dictionary<string, dynamic>? lastIndex = (edits.Count >= 1) ? edits[edits.Count-1] : null;
+                    Dictionary<string, dynamic>? lastIndex = (edits.Count >= 1) ? edits[edits.Count - 1] : null;
                     if (lastIndex != null && lastIndex["Type"] == "Text") {
                         if (new Rectangle(lastIndex["Location"], (Size)TextRenderer.MeasureText(lastIndex["Text"], new Font("Arial", lastIndex["Size"]))).Contains(e.Location)) {
                             allowed = false;
@@ -462,7 +468,7 @@ namespace bruhshot {
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
                     SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], new Font("Arial", lastIndex["Size"]));
-                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50,(int)textSize.Width),Math.Max(50,(int)textSize.Height)));
+                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
                 }
 
                 dashedPen.Dispose();
@@ -498,6 +504,9 @@ namespace bruhshot {
         void onFormClosed(object? sender, FormClosedEventArgs e) {
             newImage.Dispose();
             resolutionDisplayFont.Dispose();
+            if (!settingsForm.IsDisposed) {
+                settingsForm.Dispose();
+            }
         }
 
         void promptToSave() {
