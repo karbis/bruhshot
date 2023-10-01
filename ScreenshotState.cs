@@ -237,6 +237,11 @@ namespace bruhshot {
                 case Keys.Y:
                     redoButton();
                     break;
+                case Keys.A:
+                    startingClickPoint = new Point();
+                    endingClickPoint = new Point(Size.Width, Size.Height);
+                    FullImage.Invalidate();
+                    break;
                 default:
                     break;
             }
@@ -319,11 +324,18 @@ namespace bruhshot {
                     drawPen(e.Location);
                     break;
                 case "Text":
-                    if (!InvisibleTextbox.Focused) {
+                    bool allowed = true;
+                    Dictionary<string, dynamic>? lastIndex = (edits.Count >= 1) ? edits[edits.Count-1] : null;
+                    if (lastIndex != null && lastIndex["Type"] == "Text") {
+                        if (new Rectangle(lastIndex["Location"], (Size)TextRenderer.MeasureText(lastIndex["Text"], new Font("Arial", lastIndex["Size"]))).Contains(e.Location)) {
+                            allowed = false;
+                        }
+                    }
+                    if (allowed) {
+                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location }, { "Color", getSetting("Color") }, { "Size", getSetting("TextSize") } });
                         InvisibleTextbox.Enabled = true;
                         InvisibleTextbox.Focus();
                         InvisibleTextbox.Text = "";
-                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location }, { "Color", getSetting("Color") }, { "Size", getSetting("TextSize") } });
                     }
                     break;
                 case "Line":
@@ -445,10 +457,12 @@ namespace bruhshot {
                 e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
 
                 if (InvisibleTextbox.Focused) {
-                    Point textLocation = edits[edits.Count - 1]["Location"];
+                    Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
+                    Point textLocation = lastIndex["Location"];
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
-                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, 100, 50));
+                    SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], new Font("Arial", lastIndex["Size"]));
+                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50,(int)textSize.Width),Math.Max(50,(int)textSize.Height)));
                 }
 
                 dashedPen.Dispose();

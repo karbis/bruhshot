@@ -94,17 +94,5 @@ namespace bruhshot.Properties {
                 this["Keybind"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("224, 224, 224")]
-        public global::System.Drawing.Color ThemeColor {
-            get {
-                return ((global::System.Drawing.Color)(this["ThemeColor"]));
-            }
-            set {
-                this["ThemeColor"] = value;
-            }
-        }
     }
 }

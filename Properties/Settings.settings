@@ -20,8 +20,5 @@
     <Setting Name="Keybind" Type="System.String" Scope="User">
       <Value Profile="(Default)">F2</Value>
     </Setting>
-    <Setting Name="ThemeColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">224, 224, 224</Value>
-    </Setting>
   </Settings>
 </SettingsFile>
