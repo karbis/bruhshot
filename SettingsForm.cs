@@ -28,10 +28,10 @@ namespace bruhshot {
             KeybindTextbox.TextChanged += onKeybindTextChanged;
 
             CaptureKeybindInput.Click += captureInput;
-
         }
 
         private void button1_Click(object sender, EventArgs e) {
+            ColorDialog.Color = Properties.Settings.Default.Color;
             DialogResult result = ColorDialog.ShowDialog();
             if (result == DialogResult.OK) {
                 Properties.Settings.Default.Color = ColorDialog.Color;
