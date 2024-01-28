@@ -39,11 +39,9 @@ namespace bruhshot {
             SaveButton = new Button();
             PenTool = new Button();
             Seperator2 = new Panel();
-            FullImage = new PictureBox();
             InvisibleTextbox = new TextBox();
             toolTip1 = new ToolTip(components);
             ToolBar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)FullImage).BeginInit();
             SuspendLayout();
             // 
             // ToolBar
@@ -206,17 +204,6 @@ namespace bruhshot {
             Seperator2.Size = new Size(23, 2);
             Seperator2.TabIndex = 2;
             // 
-            // FullImage
-            // 
-            FullImage.Dock = DockStyle.Fill;
-            FullImage.Location = new Point(0, 0);
-            FullImage.Margin = new Padding(0);
-            FullImage.Name = "FullImage";
-            FullImage.Size = new Size(933, 519);
-            FullImage.TabIndex = 0;
-            FullImage.TabStop = false;
-            FullImage.WaitOnLoad = true;
-            // 
             // InvisibleTextbox
             // 
             InvisibleTextbox.AcceptsReturn = true;
@@ -237,21 +224,17 @@ namespace bruhshot {
             ClientSize = new Size(933, 519);
             Controls.Add(InvisibleTextbox);
             Controls.Add(ToolBar);
-            Controls.Add(FullImage);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 3, 4, 3);
             Name = "ScreenshotState";
             ShowInTaskbar = false;
             Text = "Screenshot";
             ToolBar.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)FullImage).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private PictureBox FullImage;
         private Panel ToolBar;
         private Button PenTool;
         private Button SaveButton;

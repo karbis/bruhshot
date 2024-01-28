@@ -14,11 +14,11 @@
     <Setting Name="FilledShape" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TextSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">12</Value>
-    </Setting>
     <Setting Name="Keybind" Type="System.String" Scope="User">
       <Value Profile="(Default)">F2</Value>
+    </Setting>
+    <Setting Name="TextFont" Type="System.Drawing.Font" Scope="User">
+      <Value Profile="(Default)">Arial, 12pt</Value>
     </Setting>
   </Settings>
 </SettingsFile>

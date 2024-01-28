@@ -33,14 +33,15 @@
             label3 = new Label();
             ShapeSelector = new ComboBox();
             ShapeFillCheck = new CheckBox();
-            TextSizeChanger = new NumericUpDown();
             label4 = new Label();
             KeybindTextbox = new TextBox();
             label5 = new Label();
             label6 = new Label();
             CaptureKeybindInput = new Button();
+            FontDialog = new FontDialog();
+            FontText = new TextBox();
+            FontPickerButton = new Button();
             ((System.ComponentModel.ISupportInitialize)ThicknessValue).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)TextSizeChanger).BeginInit();
             SuspendLayout();
             // 
             // ColorDialog
@@ -60,20 +61,20 @@
             // 
             // button1
             // 
-            button1.Location = new Point(198, 5);
+            button1.Location = new Point(156, 5);
             button1.Name = "button1";
-            button1.Size = new Size(111, 23);
+            button1.Size = new Size(58, 23);
             button1.TabIndex = 1;
-            button1.Text = "Show color picker";
+            button1.Text = "Choose";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
             // ColorShowcasePanel
             // 
             ColorShowcasePanel.BorderStyle = BorderStyle.FixedSingle;
-            ColorShowcasePanel.Location = new Point(170, 5);
+            ColorShowcasePanel.Location = new Point(220, 6);
             ColorShowcasePanel.Name = "ColorShowcasePanel";
-            ColorShowcasePanel.Size = new Size(22, 22);
+            ColorShowcasePanel.Size = new Size(89, 22);
             ColorShowcasePanel.TabIndex = 2;
             // 
             // label2
@@ -127,26 +128,14 @@
             ShapeFillCheck.TabIndex = 8;
             ShapeFillCheck.UseVisualStyleBackColor = true;
             // 
-            // TextSizeChanger
-            // 
-            TextSizeChanger.BorderStyle = BorderStyle.FixedSingle;
-            TextSizeChanger.Location = new Point(220, 63);
-            TextSizeChanger.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
-            TextSizeChanger.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            TextSizeChanger.Name = "TextSizeChanger";
-            TextSizeChanger.Size = new Size(89, 23);
-            TextSizeChanger.TabIndex = 10;
-            TextSizeChanger.ThousandsSeparator = true;
-            TextSizeChanger.Value = new decimal(new int[] { 1, 0, 0, 0 });
-            // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Location = new Point(12, 65);
             label4.Name = "label4";
-            label4.Size = new Size(50, 15);
+            label4.Size = new Size(53, 15);
             label4.TabIndex = 9;
-            label4.Text = "Text size";
+            label4.Text = "Text font";
             // 
             // KeybindTextbox
             // 
@@ -184,16 +173,40 @@
             CaptureKeybindInput.Text = "Capture";
             CaptureKeybindInput.UseVisualStyleBackColor = true;
             // 
+            // FontDialog
+            // 
+            FontDialog.FontMustExist = true;
+            // 
+            // FontText
+            // 
+            FontText.AcceptsReturn = true;
+            FontText.BorderStyle = BorderStyle.FixedSingle;
+            FontText.Location = new Point(220, 63);
+            FontText.Name = "FontText";
+            FontText.ReadOnly = true;
+            FontText.Size = new Size(89, 23);
+            FontText.TabIndex = 15;
+            // 
+            // FontPickerButton
+            // 
+            FontPickerButton.Location = new Point(156, 65);
+            FontPickerButton.Name = "FontPickerButton";
+            FontPickerButton.Size = new Size(58, 23);
+            FontPickerButton.TabIndex = 16;
+            FontPickerButton.Text = "Choose";
+            FontPickerButton.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(321, 176);
+            Controls.Add(FontPickerButton);
+            Controls.Add(FontText);
             Controls.Add(CaptureKeybindInput);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(KeybindTextbox);
-            Controls.Add(TextSizeChanger);
             Controls.Add(label4);
             Controls.Add(ShapeFillCheck);
             Controls.Add(ShapeSelector);
@@ -211,7 +224,6 @@
             StartPosition = FormStartPosition.Manual;
             Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)ThicknessValue).EndInit();
-            ((System.ComponentModel.ISupportInitialize)TextSizeChanger).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -227,11 +239,13 @@
         private Label label3;
         private ComboBox ShapeSelector;
         private CheckBox ShapeFillCheck;
-        private NumericUpDown TextSizeChanger;
         private Label label4;
         private TextBox KeybindTextbox;
         private Label label5;
         private Label label6;
         private Button CaptureKeybindInput;
+        private FontDialog FontDialog;
+        private TextBox FontText;
+        private Button FontPickerButton;
     }
 }

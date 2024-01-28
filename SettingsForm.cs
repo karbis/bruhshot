@@ -10,6 +10,11 @@ using System.Windows.Forms;
 
 namespace bruhshot {
     public partial class SettingsForm : Form {
+        void updateFontText() {
+            Font font = Properties.Settings.Default.TextFont;
+            FontText.Text = font.Name + ", " + font.SizeInPoints + "pt";
+        }
+
         public SettingsForm() {
             TopMost = true;
             InitializeComponent();
@@ -21,13 +26,23 @@ namespace bruhshot {
             ShapeFillCheck.Checked = Properties.Settings.Default.FilledShape;
             ShapeFillCheck.CheckedChanged += onShapeFillChanged;
 
-            TextSizeChanger.Value = (decimal)Properties.Settings.Default.TextSize;
-            TextSizeChanger.ValueChanged += onValueChangedTextSize;
+            updateFontText();
 
             KeybindTextbox.Text = Properties.Settings.Default.Keybind;
             KeybindTextbox.TextChanged += onKeybindTextChanged;
 
             CaptureKeybindInput.Click += captureInput;
+
+            // TODO: Make font text actually work
+            FontPickerButton.Click += (object? sender, EventArgs e) => {
+                FontDialog.Font = Properties.Settings.Default.TextFont;
+                DialogResult result = FontDialog.ShowDialog();
+                if (result == DialogResult.OK) {
+                    Properties.Settings.Default.TextFont = FontDialog.Font;
+                    updateFontText();
+                    Properties.Settings.Default.Save();
+                }
+            };
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -66,11 +81,6 @@ namespace bruhshot {
 
         void onShapeFillChanged(object? sender, EventArgs e) {
             Properties.Settings.Default.FilledShape = ShapeFillCheck.Checked;
-            Properties.Settings.Default.Save();
-        }
-
-        void onValueChangedTextSize(object? sender, EventArgs e) {
-            Properties.Settings.Default.TextSize = (int)TextSizeChanger.Value;
             Properties.Settings.Default.Save();
         }
 

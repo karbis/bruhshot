@@ -29,8 +29,10 @@ namespace bruhshot {
         Button[] tools;
         UndoManager undoManager = new UndoManager();
         SettingsForm settingsForm = new SettingsForm();
+        Bitmap image;
 
-        public ScreenshotState(Bitmap image) {
+        public ScreenshotState(Bitmap screenImage) {
+            image = screenImage;
             TopMost = true;
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.None;
@@ -46,9 +48,9 @@ namespace bruhshot {
 
             Rectangle screenBounds = (curScreen == null) ? new Rectangle(0, 0, 0, 0) : curScreen.Bounds;
             Size = new Size(screenBounds.Width, screenBounds.Height);
-            FullImage.MouseDown += TransparentMouseDown;
-            FullImage.MouseMove += TransparentMouseMove;
-            FullImage.MouseUp += TransparentMouseUp;
+            MouseDown += TransparentMouseDown;
+            MouseMove += TransparentMouseMove;
+            MouseUp += TransparentMouseUp;
             KeyDown += ScreenshotState_KeyDown;
             FormClosed += onFormClosed;
             SaveButton.Click += promptToSaveSender;
@@ -61,8 +63,9 @@ namespace bruhshot {
             CloseButton.Click += closeForm;
             InvisibleTextbox.LostFocus += disableTextbox;
 
-            FullImage.Paint += imageDarken;
-            FullImage.Image = image;
+            //FullImage.Paint += imageDarken;
+            //FullImage.Image = image;
+            Paint += imageDarken;
             newImage = image;
             DoubleBuffered = true;
             ToolBar.Visible = false;
@@ -115,9 +118,7 @@ namespace bruhshot {
                     case "Text":
                         x = v["Location"].X - location.X;
                         y = v["Location"].Y - location.Y;
-                        Font font = new Font("Arial", v["Size"]);
-                        g.DrawString(v["Text"], font, getFromBrushCache(v["Color"]), new Point(x, y));
-                        font.Dispose();
+                        g.DrawString(v["Text"], v["Font"], getFromBrushCache(v["Color"]), new Point(x, y));
                         break;
                     case "Line":
                         using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
@@ -211,7 +212,7 @@ namespace bruhshot {
                     multiplier = 100;
                 }
                 endingClickPoint = correctPoint(new Point(endingClickPoint.X + direction.X * multiplier, endingClickPoint.Y + direction.Y * multiplier));
-                FullImage.Invalidate();
+                Invalidate();
             }
             if (!InvisibleTextbox.Focused && endingClickPoint.X != -1) {
                 switch (e.KeyCode) {
@@ -246,7 +247,7 @@ namespace bruhshot {
                 case Keys.A:
                     startingClickPoint = new Point();
                     endingClickPoint = new Point(Size.Width, Size.Height);
-                    FullImage.Invalidate();
+                    Invalidate();
                     break;
                 default:
                     break;
@@ -256,12 +257,12 @@ namespace bruhshot {
         void undoButton() {
             if (InvisibleTextbox.Focused) { return; }
             edits = undoManager.undo();
-            FullImage.Invalidate();
+            Invalidate();
         }
         void redoButton() {
             if (InvisibleTextbox.Focused) { return; }
             edits = undoManager.redo();
-            FullImage.Invalidate();
+            Invalidate();
         }
 
         dynamic getSetting(string setting) {
@@ -288,7 +289,7 @@ namespace bruhshot {
         }
         void TransparentMouseMove(object? sender, MouseEventArgs e) {
             if (currentTool == "Pen") {
-                FullImage.Invalidate();
+                Invalidate();
             }
             if (e.Button != MouseButtons.Left) { return; }
             if (rectangleContains(e.Location, getCropRectangle()) && !mouseDownTransparent) {
@@ -297,7 +298,7 @@ namespace bruhshot {
             }
             if (mouseDownTransparent) {
                 endingClickPoint = e.Location;
-                FullImage.Invalidate();
+                Invalidate();
             }
         }
         void TransparentMouseUp(object? sender, MouseEventArgs e) {
@@ -318,7 +319,7 @@ namespace bruhshot {
                 int thickness = getSetting("Thickness");
                 edits.Add(new Dictionary<string, dynamic> { { "Type", "Pen" }, { "Location", new Point(lerpedPoint.X - (thickness / 2), lerpedPoint.Y - (thickness / 2)) }, { "Color", getSetting("Color") }, { "Thickness", thickness } });
             }
-            FullImage.Invalidate();
+            Invalidate();
 
         }
 
@@ -333,12 +334,12 @@ namespace bruhshot {
                     bool allowed = true;
                     Dictionary<string, dynamic>? lastIndex = (edits.Count >= 1) ? edits[edits.Count - 1] : null;
                     if (lastIndex != null && lastIndex["Type"] == "Text") {
-                        if (new Rectangle(lastIndex["Location"], (Size)TextRenderer.MeasureText(lastIndex["Text"], new Font("Arial", lastIndex["Size"]))).Contains(e.Location)) {
+                        if (new Rectangle(lastIndex["Location"], (Size)TextRenderer.MeasureText(lastIndex["Text"], lastIndex["Font"])).Contains(e.Location)) {
                             allowed = false;
                         }
                     }
                     if (allowed) {
-                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location }, { "Color", getSetting("Color") }, { "Size", getSetting("TextSize") } });
+                        edits.Add(new Dictionary<string, dynamic> { { "Type", "Text" }, { "Text", "" }, { "Location", e.Location }, { "Color", getSetting("Color") }, { "Font", getSetting("TextFont") } });
                         InvisibleTextbox.Enabled = true;
                         InvisibleTextbox.Focus();
                         InvisibleTextbox.Text = "";
@@ -382,22 +383,22 @@ namespace bruhshot {
                         offset = new Point(e.Location.X - lastClickPointTools.X, e.Location.Y - lastClickPointTools.Y);
                         Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
                         lastIndex["Location"] = new Point(lastIndex["Location"].X + offset.X, lastIndex["Location"].Y + offset.Y);
-                        FullImage.Invalidate();
+                        Invalidate();
                     }
                     break;
                 case "None":
                     offset = new Point(e.Location.X - lastClickPointTools.X, e.Location.Y - lastClickPointTools.Y);
                     startingClickPoint = correctPoint(new Point(startingClickPoint.X + offset.X, startingClickPoint.Y + offset.Y));
                     endingClickPoint = correctPoint(new Point(endingClickPoint.X + offset.X, endingClickPoint.Y + offset.Y));
-                    FullImage.Invalidate();
+                    Invalidate();
                     break;
                 case "Line":
                     edits[edits.Count - 1]["EndLocation"] = e.Location;
-                    FullImage.Invalidate();
+                    Invalidate();
                     break;
                 case "Shape":
                     edits[edits.Count - 1]["EndLocation"] = e.Location;
-                    FullImage.Invalidate();
+                    Invalidate();
                     break;
                 default:
                     break;
@@ -425,7 +426,7 @@ namespace bruhshot {
 
         Font resolutionDisplayFont = new Font("Arial", 10, FontStyle.Bold);
         void imageDarken(object? sender, PaintEventArgs e) {
-            //e.Graphics.DrawImage(FullImage.Image, FullImage.ClientRectangle);
+            e.Graphics.DrawImage(image, ClientRectangle);
             //base.OnPaint(e);
             Rectangle regionRectangle = getCropRectangle();
             Region oldClip = e.Graphics.Clip.Clone();
@@ -443,7 +444,7 @@ namespace bruhshot {
                     e.Graphics.FillRectangle(brush, new Rectangle(resolutionDrawPoint, new Size((int)e.Graphics.MeasureString(resolutionString, resolutionDisplayFont).Width, 17)));
                     e.Graphics.ExcludeClip(regionRectangle);
                 }
-                e.Graphics.FillRectangle(brush, FullImage.ClientRectangle);
+                e.Graphics.FillRectangle(brush, ClientRectangle);
             }
             e.Graphics.Clip = oldClip;
 
@@ -467,7 +468,7 @@ namespace bruhshot {
                     Point textLocation = lastIndex["Location"];
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
-                    SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], new Font("Arial", lastIndex["Size"]));
+                    SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], lastIndex["Font"]);
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
                 }
 
@@ -499,7 +500,6 @@ namespace bruhshot {
                 }
             }
             ToolBar.Location = new Point(regionRectangle.X + offsetX, regionRectangle.Y + offsetY);
-
         }
         void onFormClosed(object? sender, FormClosedEventArgs e) {
             newImage.Dispose();
@@ -532,7 +532,7 @@ namespace bruhshot {
 
         void switchMode(string newMode) {
             if (currentTool == "Pen") {
-                FullImage.Invalidate();
+                Invalidate();
             }
             if (currentTool == newMode) {
                 currentTool = "None";
@@ -551,11 +551,11 @@ namespace bruhshot {
         void onTextChanged(object? sender, EventArgs e) {
             if (sender == null) { return; }
             edits[edits.Count - 1]["Text"] = ((System.Windows.Forms.TextBox)sender).Text;
-            FullImage.Invalidate();
+            Invalidate();
         }
 
         void invalidateImage(object? sender, EventArgs e) {
-            FullImage.Invalidate();
+            Invalidate();
         }
 
         void showSettings(object? sender, EventArgs e) {
