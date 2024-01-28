@@ -37,6 +37,8 @@
             label4 = new Label();
             KeybindTextbox = new TextBox();
             label5 = new Label();
+            label6 = new Label();
+            CaptureKeybindInput = new Button();
             ((System.ComponentModel.ISupportInitialize)ThicknessValue).BeginInit();
             ((System.ComponentModel.ISupportInitialize)TextSizeChanger).BeginInit();
             SuspendLayout();
@@ -58,7 +60,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(54, 5);
+            button1.Location = new Point(198, 5);
             button1.Name = "button1";
             button1.Size = new Size(111, 23);
             button1.TabIndex = 1;
@@ -69,15 +71,15 @@
             // ColorShowcasePanel
             // 
             ColorShowcasePanel.BorderStyle = BorderStyle.FixedSingle;
-            ColorShowcasePanel.Location = new Point(171, 5);
+            ColorShowcasePanel.Location = new Point(170, 5);
             ColorShowcasePanel.Name = "ColorShowcasePanel";
-            ColorShowcasePanel.Size = new Size(251, 23);
+            ColorShowcasePanel.Size = new Size(22, 22);
             ColorShowcasePanel.TabIndex = 2;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(12, 42);
+            label2.Location = new Point(12, 36);
             label2.Name = "label2";
             label2.Size = new Size(58, 15);
             label2.TabIndex = 3;
@@ -86,7 +88,7 @@
             // ThicknessValue
             // 
             ThicknessValue.BorderStyle = BorderStyle.FixedSingle;
-            ThicknessValue.Location = new Point(76, 40);
+            ThicknessValue.Location = new Point(220, 34);
             ThicknessValue.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
             ThicknessValue.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             ThicknessValue.Name = "ThicknessValue";
@@ -98,7 +100,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(171, 42);
+            label3.Location = new Point(12, 121);
             label3.Name = "label3";
             label3.Size = new Size(39, 15);
             label3.TabIndex = 5;
@@ -109,7 +111,7 @@
             ShapeSelector.DropDownStyle = ComboBoxStyle.DropDownList;
             ShapeSelector.FormattingEnabled = true;
             ShapeSelector.Items.AddRange(new object[] { "Circle", "Square" });
-            ShapeSelector.Location = new Point(216, 40);
+            ShapeSelector.Location = new Point(188, 121);
             ShapeSelector.Name = "ShapeSelector";
             ShapeSelector.Size = new Size(121, 23);
             ShapeSelector.Sorted = true;
@@ -118,17 +120,17 @@
             // ShapeFillCheck
             // 
             ShapeFillCheck.AutoSize = true;
-            ShapeFillCheck.Location = new Point(171, 69);
+            ShapeFillCheck.CheckAlign = ContentAlignment.MiddleRight;
+            ShapeFillCheck.Location = new Point(294, 150);
             ShapeFillCheck.Name = "ShapeFillCheck";
-            ShapeFillCheck.Size = new Size(74, 19);
+            ShapeFillCheck.Size = new Size(15, 14);
             ShapeFillCheck.TabIndex = 8;
-            ShapeFillCheck.Text = "Shape fill";
             ShapeFillCheck.UseVisualStyleBackColor = true;
             // 
             // TextSizeChanger
             // 
             TextSizeChanger.BorderStyle = BorderStyle.FixedSingle;
-            TextSizeChanger.Location = new Point(76, 69);
+            TextSizeChanger.Location = new Point(220, 63);
             TextSizeChanger.Maximum = new decimal(new int[] { 2048, 0, 0, 0 });
             TextSizeChanger.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             TextSizeChanger.Name = "TextSizeChanger";
@@ -140,7 +142,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(12, 71);
+            label4.Location = new Point(12, 65);
             label4.Name = "label4";
             label4.Size = new Size(50, 15);
             label4.TabIndex = 9;
@@ -150,7 +152,7 @@
             // 
             KeybindTextbox.AcceptsReturn = true;
             KeybindTextbox.BorderStyle = BorderStyle.FixedSingle;
-            KeybindTextbox.Location = new Point(76, 98);
+            KeybindTextbox.Location = new Point(220, 92);
             KeybindTextbox.Name = "KeybindTextbox";
             KeybindTextbox.Size = new Size(89, 23);
             KeybindTextbox.TabIndex = 11;
@@ -158,17 +160,37 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(12, 101);
+            label5.Location = new Point(12, 94);
             label5.Name = "label5";
             label5.Size = new Size(50, 15);
             label5.TabIndex = 12;
             label5.Text = "Keybind";
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(12, 149);
+            label6.Name = "label6";
+            label6.Size = new Size(57, 15);
+            label6.TabIndex = 13;
+            label6.Text = "Shape Fill";
+            // 
+            // CaptureKeybindInput
+            // 
+            CaptureKeybindInput.Location = new Point(156, 92);
+            CaptureKeybindInput.Name = "CaptureKeybindInput";
+            CaptureKeybindInput.Size = new Size(58, 23);
+            CaptureKeybindInput.TabIndex = 14;
+            CaptureKeybindInput.Text = "Capture";
+            CaptureKeybindInput.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(434, 131);
+            ClientSize = new Size(321, 176);
+            Controls.Add(CaptureKeybindInput);
+            Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(KeybindTextbox);
             Controls.Add(TextSizeChanger);
@@ -209,5 +231,7 @@
         private Label label4;
         private TextBox KeybindTextbox;
         private Label label5;
+        private Label label6;
+        private Button CaptureKeybindInput;
     }
 }

@@ -63,7 +63,7 @@
             label3.Name = "label3";
             label3.Size = new Size(31, 15);
             label3.TabIndex = 1;
-            label3.Text = "2023";
+            label3.Text = "2024";
             // 
             // linkLabel1
             // 
@@ -101,9 +101,9 @@
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Point);
             label2.Location = new Point(129, 47);
             label2.Name = "label2";
-            label2.Size = new Size(39, 21);
+            label2.Size = new Size(51, 21);
             label2.TabIndex = 4;
-            label2.Text = "v1.4.2";
+            label2.Text = "v1.4.3";
             // 
             // InfoForm
             // 

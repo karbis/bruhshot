@@ -27,6 +27,8 @@ namespace bruhshot {
             KeybindTextbox.Text = Properties.Settings.Default.Keybind;
             KeybindTextbox.TextChanged += onKeybindTextChanged;
 
+            CaptureKeybindInput.Click += captureInput;
+
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -36,6 +38,20 @@ namespace bruhshot {
                 ColorShowcasePanel.BackColor = Properties.Settings.Default.Color;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        GlobalKeyboardHook? _globalKeyboardHook;
+        void captureInput(object? sender, EventArgs _) {
+            if (_globalKeyboardHook != null) return;
+            _globalKeyboardHook = new GlobalKeyboardHook();
+            _globalKeyboardHook.KeyboardPressed += (object? sender, GlobalKeyboardHookEventArgs e) => {
+                if (e.KeyboardState != GlobalKeyboardHook.KeyboardState.KeyDown) return;
+                string loggedKey = e.KeyboardData.Key.ToString();
+                KeybindTextbox.Text = loggedKey;
+                onKeybindTextChanged(KeybindTextbox, _);
+                _globalKeyboardHook.Dispose();
+                _globalKeyboardHook = null;
+            };
         }
 
         void onValueChangedThickness(object? sender, EventArgs e) {

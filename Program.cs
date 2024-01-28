@@ -26,7 +26,7 @@ namespace bruhshot
 
     public class CustomApplicationContext : ApplicationContext
     {
-        private NotifyIcon trayIcon;
+        public NotifyIcon trayIcon;
         GlobalKeyboardHook _globalKeyboardHook;
         ScreenshotState? screenshotState;
 
@@ -38,11 +38,13 @@ namespace bruhshot
             Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
+                g.Clear(Color.Black);
                 g.CopyFromScreen(curScreen.Bounds.Location, Point.Empty, screenBounds.Size);
             }
             return bitmap;
         }
 
+        SettingsForm? settingForm;
         public CustomApplicationContext()
         {
             // Initialize Tray Icon
@@ -54,14 +56,23 @@ namespace bruhshot
             contextMenu.Items.Add(new ToolStripSeparator());
 
             var screenshotButton = new ToolStripMenuItem();
-            contextMenu.Items.AddRange(new ToolStripItem[] { screenshotButton });
             screenshotButton.Text = "Screenshot";
             screenshotButton.Click += startScreenshottingSender;
 
             var exitButton = new ToolStripMenuItem();
-            contextMenu.Items.AddRange(new ToolStripItem[] { exitButton });
             exitButton.Text = "Exit";
             exitButton.Click += Exit;
+
+            var settingsButton = new ToolStripMenuItem();
+            settingsButton.Text = "Settings";
+            settingsButton.Click += (object? sender, EventArgs e) => {
+                if (settingForm != null) return;
+                settingForm = new SettingsForm();
+                settingForm.Show();
+            };
+
+            contextMenu.Items.AddRange(new ToolStripItem[] { screenshotButton, settingsButton, exitButton });
+
 
             _globalKeyboardHook = new GlobalKeyboardHook();
             _globalKeyboardHook.KeyboardPressed += OnKeyPressed;
@@ -71,6 +82,11 @@ namespace bruhshot
                 Icon = Resources.AppIcon,
                 ContextMenuStrip = contextMenu,
                 Visible = true
+            };
+
+            trayIcon.MouseClick += (object? sender, MouseEventArgs e) => {
+                if (e.Button != MouseButtons.Left) return;
+                startScreenshotting();
             };
         }
 
