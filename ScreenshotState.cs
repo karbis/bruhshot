@@ -268,6 +268,7 @@ namespace bruhshot {
                 case Keys.A:
                     startingClickPoint = new Point();
                     endingClickPoint = new Point(Size.Width, Size.Height);
+                    ToolBar.Visible = true;
                     Invalidate();
                     break;
                 default:
