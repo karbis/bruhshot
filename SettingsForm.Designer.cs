@@ -41,6 +41,8 @@
             FontDialog = new FontDialog();
             FontText = new TextBox();
             FontPickerButton = new Button();
+            LineShapeDropdown = new ComboBox();
+            label7 = new Label();
             ((System.ComponentModel.ISupportInitialize)ThicknessValue).BeginInit();
             SuspendLayout();
             // 
@@ -196,11 +198,33 @@
             FontPickerButton.Text = "Choose";
             FontPickerButton.UseVisualStyleBackColor = true;
             // 
+            // LineShapeDropdown
+            // 
+            LineShapeDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
+            LineShapeDropdown.FormattingEnabled = true;
+            LineShapeDropdown.Items.AddRange(new object[] { "Arrow", "Line" });
+            LineShapeDropdown.Location = new Point(188, 170);
+            LineShapeDropdown.Name = "LineShapeDropdown";
+            LineShapeDropdown.Size = new Size(121, 23);
+            LineShapeDropdown.Sorted = true;
+            LineShapeDropdown.TabIndex = 18;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(12, 176);
+            label7.Name = "label7";
+            label7.Size = new Size(63, 15);
+            label7.TabIndex = 17;
+            label7.Text = "Line shape";
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(321, 176);
+            ClientSize = new Size(321, 201);
+            Controls.Add(LineShapeDropdown);
+            Controls.Add(label7);
             Controls.Add(FontPickerButton);
             Controls.Add(FontText);
             Controls.Add(CaptureKeybindInput);
@@ -247,5 +271,7 @@
         private FontDialog FontDialog;
         private TextBox FontText;
         private Button FontPickerButton;
+        private ComboBox LineShapeDropdown;
+        private Label label7;
     }
 }

@@ -25,6 +25,11 @@ namespace bruhshot {
             ShapeSelector.SelectedIndexChanged += onSelectionChangedShape;
             ShapeFillCheck.Checked = Properties.Settings.Default.FilledShape;
             ShapeFillCheck.CheckedChanged += onShapeFillChanged;
+            LineShapeDropdown.SelectedItem = Properties.Settings.Default.LineShape;
+            LineShapeDropdown.SelectedIndexChanged += (object? sender, EventArgs e) => {
+                Properties.Settings.Default.LineShape = (string)LineShapeDropdown.SelectedItem;
+                Properties.Settings.Default.Save();
+            };
 
             updateFontText();
 

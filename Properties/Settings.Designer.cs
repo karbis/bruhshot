@@ -94,5 +94,17 @@ namespace bruhshot.Properties {
                 this["TextFont"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Line")]
+        public string LineShape {
+            get {
+                return ((string)(this["LineShape"]));
+            }
+            set {
+                this["LineShape"] = value;
+            }
+        }
     }
 }

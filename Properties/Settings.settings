@@ -20,5 +20,8 @@
     <Setting Name="TextFont" Type="System.Drawing.Font" Scope="User">
       <Value Profile="(Default)">Arial, 12pt</Value>
     </Setting>
+    <Setting Name="LineShape" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Line</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

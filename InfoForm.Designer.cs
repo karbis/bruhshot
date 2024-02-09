@@ -103,7 +103,7 @@
             label2.Name = "label2";
             label2.Size = new Size(51, 21);
             label2.TabIndex = 4;
-            label2.Text = "v1.4.3";
+            label2.Text = "v1.4.4";
             // 
             // InfoForm
             // 

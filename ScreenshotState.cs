@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Button = System.Windows.Forms.Button;
+using Button = System.Windows.Forms.Button; 
 
 namespace bruhshot {
     public partial class ScreenshotState : Form {
@@ -128,6 +128,18 @@ namespace bruhshot {
                             int x2 = v["EndLocation"].X - location.X;
                             int y2 = v["EndLocation"].Y - location.Y;
                             g.DrawLine(pen, new Point(x, y), new Point(x2, y2));
+
+                            if (v["Shape"] != "Arrow") continue;
+                            double angle = -Math.Atan2(y2 - y, x2 - x);
+                            double RAD_CONSTANT = Math.PI / 180;
+                            Point lineSize = new Point(x2 - x, y2 - y);
+                            double arrowSize = Math.Min(40, Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2))/2);
+                            int offsetX = (int)(Math.Sin(angle + 71 * RAD_CONSTANT) * arrowSize);
+                            int offsetY = (int)(Math.Cos(angle + 71 * RAD_CONSTANT) * arrowSize);
+                            int offsetX2 = (int)(Math.Sin(angle - 71 * RAD_CONSTANT) * arrowSize);
+                            int offsetY2 = (int)(Math.Cos(angle - 71 * RAD_CONSTANT) * arrowSize);
+                            g.DrawLine(pen, new Point(x2,y2),new Point(x2-offsetX,y2-offsetY));
+                            g.DrawLine(pen, new Point(x2, y2), new Point(x2 + offsetX2, y2 + offsetY2));
                         }
                         break;
                     case "Shape":
@@ -172,6 +184,15 @@ namespace bruhshot {
             using (Graphics g = Graphics.FromImage(croppedImage)) {
                 g.DrawImage(newImage, new Rectangle(0, 0, crop.Width, crop.Height), crop, GraphicsUnit.Pixel);
                 applyImageEdits(g, true);
+                /*using (Brush b = new SolidBrush(Color.FromArgb(128, 255, 255, 255))) {
+                    Font font = new Font("Arial", 10);
+                    SizeF measured = g.MeasureString("IMAGE TAKEN WITH BRUHSHOT", font);
+                    float pixelsPerEm = measured.Width / 10;
+                    float min = Math.Min(crop.Width,crop.Height)/pixelsPerEm;
+                    font.Dispose();
+                    Font newFont = new Font("Arial", min);
+                    g.DrawString("IMAGE TAKEN WITH BRUHSHOT",newFont,b,new PointF(crop.Width/2-(pixelsPerEm*min/2),crop.Height/2-measured.Height/2));
+                };*/ // not actually adding this
             }
             newImage = croppedImage;
         }
@@ -297,13 +318,13 @@ namespace bruhshot {
                 return;
             }
             if (mouseDownTransparent) {
-                endingClickPoint = e.Location;
+                endingClickPoint = new Point(e.Location.X+1,e.Location.Y+1);
                 Invalidate();
             }
         }
         void TransparentMouseUp(object? sender, MouseEventArgs e) {
             if (e.Button != MouseButtons.Left) { return; }
-            if (rectangleContains(e.Location, getCropRectangle())) {
+            if (rectangleContains(new Point(e.Location.X+1,e.Location.Y+1), getCropRectangle())) {
                 InfoPanelUp(sender, e);
                 return;
             }
@@ -346,7 +367,7 @@ namespace bruhshot {
                     }
                     break;
                 case "Line":
-                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") } });
+                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") }, { "Shape", getSetting("LineShape") } });
                     break;
                 case "Shape":
                     edits.Add(new Dictionary<string, dynamic> { { "Type", "Shape" }, { "Shape", ((getSetting("FilledShape")) ? "Filled" : "") + getSetting("Shape") }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Filled", false }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") } });
