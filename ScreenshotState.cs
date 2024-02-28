@@ -565,10 +565,13 @@ namespace bruhshot {
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
                 }
 
+                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
+                dashedPen.Dispose();
+
                 using (Brush brush = new SolidBrush(Color.White)) {
                     e.Graphics.DrawString(resolutionString, resolutionDisplayFont, brush, resolutionDrawPoint);
                 }
-                using (Pen pen = new Pen(Color.White)) {
+                using (Pen pen = new Pen(Color.LightGray)) {
                     Rectangle[] cornerRectangles = GetCornerRectangles(1);
                     foreach (Rectangle rect in cornerRectangles) {
                         e.Graphics.DrawRectangle(pen, rect);
@@ -580,9 +583,6 @@ namespace bruhshot {
                         e.Graphics.FillRectangle(brush, rect);
                     }
                 }
-
-                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
-                dashedPen.Dispose();
             }
 
             if (currentTool == "Pen") {
