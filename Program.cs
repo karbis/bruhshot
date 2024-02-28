@@ -1,52 +1,53 @@
 using bruhshot.Properties;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Resources;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
-namespace bruhshot
-{
-    static class Program
-    {
+namespace bruhshot {
+    static class Program {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
-        {
+        static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new CustomApplicationContext());
         }
     }
 
-    public class CustomApplicationContext : ApplicationContext
-    {
+    public class CustomApplicationContext : ApplicationContext {
         public NotifyIcon trayIcon;
         GlobalKeyboardHook _globalKeyboardHook;
         ScreenshotState? screenshotState;
 
-        Bitmap takeScreenshot()
-        {
+        Bitmap takeScreenshot() {
             Screen? curScreen = Screen.FromPoint(Cursor.Position);
-            if (curScreen == null) { return new Bitmap(1,1); }
+            if (curScreen == null) { return new Bitmap(1, 1); }
             Rectangle screenBounds = curScreen.Bounds;
             Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
+            using (Graphics g = Graphics.FromImage(bitmap)) {
                 g.Clear(Color.Black);
                 g.CopyFromScreen(curScreen.Bounds.Location, Point.Empty, screenBounds.Size);
+
+                if (Settings.Default.CaptureCursor) {
+                    try {
+                        CURSORINFO pci;
+                        pci.cbSize = Marshal.SizeOf(typeof(CURSORINFO));
+
+                        if (GetCursorInfo(out pci) && pci.flags == CURSOR_SHOWING) {
+                            DrawIcon(g.GetHdc(), pci.ptScreenPos.x, pci.ptScreenPos.y, pci.hCursor);
+                            g.ReleaseHdc();
+                        }
+                    } catch {
+
+                    }
+                }
             }
             return bitmap;
         }
 
         SettingsForm? settingForm;
-        public CustomApplicationContext()
-        {
+        ToolStripMenuItem settingsButton;
+        public CustomApplicationContext() {
             // Initialize Tray Icon
 
             var contextMenu = new ContextMenuStrip();
@@ -63,11 +64,12 @@ namespace bruhshot
             exitButton.Text = "Exit";
             exitButton.Click += Exit;
 
-            var settingsButton = new ToolStripMenuItem();
+            settingsButton = new ToolStripMenuItem();
             settingsButton.Text = "Settings";
             settingsButton.Click += (object? sender, EventArgs e) => {
                 if (settingForm != null) return;
                 settingForm = new SettingsForm();
+                settingForm.StartPosition = FormStartPosition.CenterScreen;
                 settingForm.Show();
             };
 
@@ -77,8 +79,7 @@ namespace bruhshot
             _globalKeyboardHook = new GlobalKeyboardHook();
             _globalKeyboardHook.KeyboardPressed += OnKeyPressed;
 
-            trayIcon = new NotifyIcon()
-            {
+            trayIcon = new NotifyIcon() {
                 Icon = Resources.AppIcon,
                 ContextMenuStrip = contextMenu,
                 Visible = true
@@ -91,31 +92,27 @@ namespace bruhshot
         }
 
         void showInfo(object? sender, EventArgs e) {
-            InfoForm form = new InfoForm();
-            form.Show();
+            settingsButton.PerformClick();
+            if (settingForm == null) return;
+            settingForm.tabControl1.SelectTab("InfoPage");
         }
 
-        void startScreenshottingSender(object? sender, EventArgs e)
-        {
+        void startScreenshottingSender(object? sender, EventArgs e) {
             startScreenshotting();
         }
 
-        void startScreenshotting()
-        {
-            if (screenshotState == null || (screenshotState != null && screenshotState.IsDisposed))
-            {
+        void startScreenshotting() {
+            if (screenshotState == null || (screenshotState != null && screenshotState.IsDisposed)) {
                 screenshotState = new ScreenshotState(takeScreenshot());
                 screenshotState.Show();
                 screenshotState.Focus();
             }
         }
 
-        private void OnKeyPressed(object? sender, GlobalKeyboardHookEventArgs e)
-        {
+        private void OnKeyPressed(object? sender, GlobalKeyboardHookEventArgs e) {
             // EDT: No need to filter for VkSnapshot anymore. This now gets handled
             // through the constructor of GlobalKeyboardHook(...).
-            if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyDown)
-            {
+            if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyDown) {
                 // Now you can access both, the key and virtual code
                 Keys loggedKey = e.KeyboardData.Key;
                 string key = loggedKey.ToString().ToLower();
@@ -128,11 +125,38 @@ namespace bruhshot
                 }
             }
         }
-        void Exit(object? sender, EventArgs e)
-        {
+        void Exit(object? sender, EventArgs e) {
             // Hide tray icon, otherwise it will remain shown until user mouses over it
             trayIcon.Visible = false;
             Application.Exit();
         }
+
+        public static void SaveImage(Image image, string name) {
+            image.Save(name); // exists so i can close the ScreenshotState quicker without having to wait for it to save,
+            // and instead have another thread handle it
+        }
+
+        // https://stackoverflow.com/questions/6750056/how-to-capture-the-screen-and-mouse-pointer-using-windows-apis
+        [StructLayout(LayoutKind.Sequential)]
+        struct CURSORINFO {
+            public Int32 cbSize;
+            public Int32 flags;
+            public IntPtr hCursor;
+            public POINTAPI ptScreenPos;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct POINTAPI {
+            public int x;
+            public int y;
+        }
+
+        [DllImport("user32.dll")]
+        static extern bool GetCursorInfo(out CURSORINFO pci);
+
+        [DllImport("user32.dll")]
+        static extern bool DrawIcon(IntPtr hDC, int X, int Y, IntPtr hIcon);
+
+        const Int32 CURSOR_SHOWING = 0x00000001;
     }
 }

@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
+﻿using Microsoft.VisualBasic.Devices;
+using Microsoft.VisualBasic.Logging;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Button = System.Windows.Forms.Button; 
+using Button = System.Windows.Forms.Button;
 
 namespace bruhshot {
     public partial class ScreenshotState : Form {
         //PictureBox fullImage; 
-        Point startingClickPoint;
-        Point endingClickPoint = new Point(-1, 0);
+        public Point startingClickPoint;
+        public Point endingClickPoint = new Point(-1, 0);
         Image newImage;
         bool mouseDownTransparent = false;
         List<Dictionary<string, dynamic>> edits = new List<Dictionary<string, dynamic>>();
@@ -30,6 +21,7 @@ namespace bruhshot {
         UndoManager undoManager = new UndoManager();
         SettingsForm settingsForm = new SettingsForm();
         Bitmap image;
+        int? dragId;
 
         public ScreenshotState(Bitmap screenImage) {
             image = screenImage;
@@ -62,6 +54,7 @@ namespace bruhshot {
             SettingsButton.Click += showSettings;
             CloseButton.Click += closeForm;
             InvisibleTextbox.LostFocus += disableTextbox;
+            MouseMove += GlobalMouseMove;
 
             //FullImage.Paint += imageDarken;
             //FullImage.Image = image;
@@ -122,7 +115,7 @@ namespace bruhshot {
                         break;
                     case "Line":
                         using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
-                            pen.Width = v["Thickness"];
+                            pen.Width = v["Thickness"]; 
                             x = v["StartLocation"].X - location.X;
                             y = v["StartLocation"].Y - location.Y;
                             int x2 = v["EndLocation"].X - location.X;
@@ -220,37 +213,23 @@ namespace bruhshot {
                 return;
             }
 
+            string autoSaveLocation = getSetting("AutoSaveLocation");
+            if (getSetting("AutoSave") && Directory.Exists(autoSaveLocation)) {
+                CustomApplicationContext.SaveImage(newImage, Path.Combine(autoSaveLocation, GetCurrentTime() + ".png"));
+            }
+
             pngConverter.Dispose();
             newImage.Dispose();
             Close();
         }
+
+        string GetCurrentTime() {
+            DateTime now = DateTime.Now;
+            return now.Year + "-" + now.Month.ToString().PadLeft(2, '0') + "-" + now.Day.ToString().PadLeft(2, '0') + " "
+                + now.Hour + "-" + now.Minute.ToString().PadLeft(2, '0') + "-" + now.Second.ToString().PadLeft(2, '0');
+        }
+
         void ScreenshotState_KeyDown(object? sender, KeyEventArgs e) {
-            void resizeCrop(Point direction) {
-                int multiplier = 10;
-                if (e.Shift) {
-                    multiplier = 1;
-                } else if (e.Control) {
-                    multiplier = 100;
-                }
-                endingClickPoint = correctPoint(new Point(endingClickPoint.X + direction.X * multiplier, endingClickPoint.Y + direction.Y * multiplier));
-                Invalidate();
-            }
-            if (!InvisibleTextbox.Focused && endingClickPoint.X != -1) {
-                switch (e.KeyCode) {
-                    case Keys.A:
-                        resizeCrop(new Point(-1, 0));
-                        break;
-                    case Keys.W:
-                        resizeCrop(new Point(0, -1));
-                        break;
-                    case Keys.S:
-                        resizeCrop(new Point(0, 1));
-                        break;
-                    case Keys.D:
-                        resizeCrop(new Point(1, 0));
-                        break;
-                }
-            }
             if (!e.Control) { return; }
             switch (e.KeyCode) {
                 case Keys.C:
@@ -298,8 +277,55 @@ namespace bruhshot {
             redoButton();
         }
 
+        void CornerPosCheck(Point loc) {
+            Rectangle[] cornerRects = GetCornerRectangles();
+            for (int i = 0; i < 8; i++) {
+                Rectangle rect = cornerRects[i];
+                if (!rectangleContains(loc, rect)) continue;
+                dragId = i;
+
+                Rectangle crop = getCropRectangle();
+                startingClickPoint = new Point(crop.X, crop.Y);
+                endingClickPoint = new Point(crop.Right, crop.Bottom);
+                Point curStart = startingClickPoint;
+                Point curEnd = endingClickPoint;
+                if (dragId == 1 || dragId == 7) {
+                    startingClickPoint = new Point(curEnd.X, curStart.Y);
+                    endingClickPoint = new Point(curStart.X, curEnd.Y);
+                } else if (dragId == 2 || dragId == 5) {
+                    startingClickPoint = new Point(curStart.X, curEnd.Y);
+                    endingClickPoint = new Point(curEnd.X, curStart.Y);
+                } else if (dragId == 3 || dragId == 6) {
+                    startingClickPoint = curEnd;
+                    endingClickPoint = curStart;
+                }
+
+                return;
+            }
+        }
+        void CornerRectChange(Point loc) {
+            if (dragId != null) {
+                switch (dragId) {
+                    case 6:
+                    case 4:
+                        startingClickPoint = new Point(startingClickPoint.X, loc.Y);
+                        break;
+                    case 7:
+                    case 5:
+                        startingClickPoint = new Point(loc.X, startingClickPoint.Y);
+                        break;
+                    default:
+                        startingClickPoint = loc;
+                        break;
+                }
+                Invalidate();
+            }
+        }
+
         void TransparentMouseDown(object? sender, MouseEventArgs e) {
             if (e.Button != MouseButtons.Left) { return; }
+            CornerPosCheck(e.Location);
+            if (dragId != null) return;
             if (rectangleContains(e.Location, getCropRectangle())) {
                 InfoPanelDown(sender, e);
                 return;
@@ -313,6 +339,8 @@ namespace bruhshot {
             if (currentTool == "Pen") {
                 Invalidate();
             }
+            CornerRectChange(e.Location);
+            if (dragId != null) return;
             if (e.Button != MouseButtons.Left) { return; }
             if (rectangleContains(e.Location, getCropRectangle()) && !mouseDownTransparent) {
                 InfoPanelMove(sender, e);
@@ -325,6 +353,7 @@ namespace bruhshot {
         }
         void TransparentMouseUp(object? sender, MouseEventArgs e) {
             if (e.Button != MouseButtons.Left) { return; }
+            dragId = null;
             if (rectangleContains(new Point(e.Location.X+1,e.Location.Y+1), getCropRectangle())) {
                 InfoPanelUp(sender, e);
                 return;
@@ -346,6 +375,8 @@ namespace bruhshot {
         }
 
         void InfoPanelDown(object? sender, MouseEventArgs e) {
+            CornerPosCheck(e.Location);
+            if (dragId != null) return;
             infoPanelDown = true;
             lastClickPointTools = e.Location;
             switch (currentTool) {
@@ -378,10 +409,12 @@ namespace bruhshot {
             }
         }
         void InfoPanelUp(object? sender, MouseEventArgs e) {
+            if (e.Button != MouseButtons.Left) { return; }
             if (currentTool != "None" && infoPanelDown) {
                 undoManager.makeWaypoint(edits);
             }
             infoPanelDown = false;
+            dragId = null;
         }
 
         Point correctPoint(Point point) {
@@ -394,6 +427,8 @@ namespace bruhshot {
         }
 
         void InfoPanelMove(object? sender, MouseEventArgs e) {
+            CornerRectChange(e.Location);
+            if (dragId != null) return;
             if (!infoPanelDown) { return; }
             Point offset;
             switch (currentTool) {
@@ -415,7 +450,20 @@ namespace bruhshot {
                     Invalidate();
                     break;
                 case "Line":
-                    edits[edits.Count - 1]["EndLocation"] = e.Location;
+                    Dictionary<string, dynamic> edit = edits[edits.Count - 1];
+                    edit["EndLocation"] = e.Location;
+                    if ((ModifierKeys & Keys.Shift) == Keys.Shift) {
+                        int x2 = edit["EndLocation"].X;
+                        int x = edit["StartLocation"].X;
+                        int y2 = edit["EndLocation"].Y;
+                        int y = edit["StartLocation"].Y;
+                        double angle = -Math.Atan2(y2-y, x2-x);
+                        const double FIFTEEN_DEGREES = Math.PI / 180 * 15;
+                        angle = Math.Floor(angle / FIFTEEN_DEGREES + FIFTEEN_DEGREES/2  ) * FIFTEEN_DEGREES + FIFTEEN_DEGREES*6;
+                        Point lineSize = new Point(x2 - x, y2 - y);
+                        double lineLength = Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2));
+                        edit["EndLocation"] = new Point(x + (int)(Math.Sin(angle) * lineLength), y + (int)(Math.Cos(angle) * lineLength));
+                    }
                     Invalidate();
                     break;
                 case "Shape":
@@ -446,6 +494,21 @@ namespace bruhshot {
             return newRectangle;
         }
 
+        const int DRAG_SIZE = 8;
+        Rectangle[] GetCornerRectangles(int extraSize = 0) {
+            Rectangle crop = getCropRectangle();
+            const int smallSize = DRAG_SIZE - 2;
+            Rectangle rect1 = new Rectangle(crop.X - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize*2, DRAG_SIZE + extraSize*2); // top left
+            Rectangle rect2 = new Rectangle(crop.Right - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // top right
+            Rectangle rect3 = new Rectangle(crop.X - DRAG_SIZE / 2 - 1, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // bottom left
+            Rectangle rect4 = new Rectangle(crop.Right - DRAG_SIZE / 2 - 1, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // bottom right
+            Rectangle rect5 = new Rectangle(crop.X - smallSize / 2 - 1 + crop.Width/2, crop.Y - smallSize / 2 - extraSize, smallSize + extraSize * 2, smallSize + extraSize * 2); // top center
+            Rectangle rect6 = new Rectangle(crop.X - smallSize / 2 - 1, crop.Y - smallSize / 2 - extraSize + crop.Height/2, smallSize + extraSize * 2, smallSize + extraSize * 2); // left center
+            Rectangle rect7 = new Rectangle(crop.X - smallSize / 2 - 1 + crop.Width/2, crop.Bottom - smallSize / 2 - extraSize, smallSize + extraSize * 2, smallSize + extraSize * 2); // bottom center
+            Rectangle rect8 = new Rectangle(crop.Right - smallSize / 2 - 1, crop.Y - smallSize / 2 - extraSize + crop.Height/2, smallSize + extraSize * 2, smallSize + extraSize * 2); // right center
+            return new Rectangle[8] { rect1, rect2, rect3, rect4, rect5, rect6, rect7, rect8 };
+        }
+
         Font resolutionDisplayFont = new Font("Arial", 10, FontStyle.Bold);
         void imageDarken(object? sender, PaintEventArgs e) {
             e.Graphics.DrawImage(image, ClientRectangle);
@@ -470,20 +533,12 @@ namespace bruhshot {
             }
             e.Graphics.Clip = oldClip;
 
-            if (endingClickPoint.X != -1) {
-                using (Brush brush = new SolidBrush(Color.White)) {
-                    e.Graphics.DrawString(resolutionString, resolutionDisplayFont, brush, resolutionDrawPoint);
-                }
-            }
-
             applyImageEdits(e.Graphics, false);
 
             if (endingClickPoint.X != -1) {
                 Pen dashedPen = new Pen(Color.LightGray);
                 dashedPen.DashStyle = DashStyle.Dash;
                 dashedPen.Width = 2f;
-
-                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
 
                 if (InvisibleTextbox.Focused) {
                     Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
@@ -494,6 +549,23 @@ namespace bruhshot {
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
                 }
 
+                using (Brush brush = new SolidBrush(Color.White)) {
+                    e.Graphics.DrawString(resolutionString, resolutionDisplayFont, brush, resolutionDrawPoint);
+                }
+                using (Pen pen = new Pen(Color.White)) {
+                    Rectangle[] cornerRectangles = GetCornerRectangles(1);
+                    foreach (Rectangle rect in cornerRectangles) {
+                        e.Graphics.DrawRectangle(pen, rect);
+                    }
+                }
+                using (Brush brush = new SolidBrush(Color.FromArgb(128, 44, 44, 44))) {
+                    Rectangle[] cornerRectangles = GetCornerRectangles();
+                    foreach (Rectangle rect in cornerRectangles) {
+                        e.Graphics.FillRectangle(brush, rect);
+                    }
+                }
+
+                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
                 dashedPen.Dispose();
             }
 
@@ -534,7 +606,7 @@ namespace bruhshot {
         void promptToSave() {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-            saveFileDialog.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|All Files (*.*)|*.*";
+            saveFileDialog.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|WebP Files (*.webp)|*.webp|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
             saveFileDialog.Title = "Save Screenshot";
             saveFileDialog.DefaultExt = "png";
             saveFileDialog.AddExtension = true;
@@ -594,6 +666,25 @@ namespace bruhshot {
 
         void disableTextbox(object? sender, EventArgs e) {
             InvisibleTextbox.Enabled = false;
+        }
+
+        void GlobalMouseMove(object? sender, MouseEventArgs e) {
+            if (dragId != null || infoPanelDown) {
+                Cursor.Current = Cursors.Default;
+                return;
+            }
+
+            if (currentTool == "None" && rectangleContains(Cursor.Position, getCropRectangle())) {
+                Cursor.Current = Cursors.SizeAll;
+                return;
+            }
+
+            foreach (Rectangle rect in GetCornerRectangles()) {
+                if (!rectangleContains(Cursor.Position, rect)) continue;
+                Cursor.Current = Cursors.SizeAll;
+                return;
+            }
+            Cursor.Current = Cursors.Default;
         }
     }
 }

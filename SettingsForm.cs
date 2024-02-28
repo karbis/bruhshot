@@ -14,6 +14,13 @@ namespace bruhshot {
             Font font = Properties.Settings.Default.TextFont;
             FontText.Text = font.Name + ", " + font.SizeInPoints + "pt";
         }
+        void SetUpCheckbox(CheckBox check, string settingName) {
+            check.Checked = (bool)Properties.Settings.Default[settingName];
+            check.CheckedChanged += (object? sender, EventArgs e) => {
+                Properties.Settings.Default[settingName] = check.Checked;
+                Properties.Settings.Default.Save();
+            };
+        }
 
         public SettingsForm() {
             TopMost = true;
@@ -23,22 +30,29 @@ namespace bruhshot {
             ThicknessValue.Value = (decimal)Properties.Settings.Default.Thickness;
             ShapeSelector.SelectedItem = Properties.Settings.Default.Shape;
             ShapeSelector.SelectedIndexChanged += onSelectionChangedShape;
-            ShapeFillCheck.Checked = Properties.Settings.Default.FilledShape;
-            ShapeFillCheck.CheckedChanged += onShapeFillChanged;
             LineShapeDropdown.SelectedItem = Properties.Settings.Default.LineShape;
             LineShapeDropdown.SelectedIndexChanged += (object? sender, EventArgs e) => {
                 Properties.Settings.Default.LineShape = (string)LineShapeDropdown.SelectedItem;
                 Properties.Settings.Default.Save();
             };
+            SetUpCheckbox(CaptureCursor, "CaptureCursor");
+            SetUpCheckbox(ShapeFillCheck, "FilledShape");
+            SetUpCheckbox(AutoSaveOption, "AutoSave");
+
 
             updateFontText();
 
             KeybindTextbox.Text = Properties.Settings.Default.Keybind;
             KeybindTextbox.TextChanged += onKeybindTextChanged;
 
+            AutoSaveLocation.Text = Properties.Settings.Default.AutoSaveLocation;
+            AutoSaveLocation.TextChanged += (object? sender, EventArgs e) => {
+                Properties.Settings.Default.AutoSaveLocation = AutoSaveLocation.Text;
+                Properties.Settings.Default.Save();
+            };
+
             CaptureKeybindInput.Click += captureInput;
 
-            // TODO: Make font text actually work
             FontPickerButton.Click += (object? sender, EventArgs e) => {
                 FontDialog.Font = Properties.Settings.Default.TextFont;
                 DialogResult result = FontDialog.ShowDialog();
@@ -46,6 +60,13 @@ namespace bruhshot {
                     Properties.Settings.Default.TextFont = FontDialog.Font;
                     updateFontText();
                     Properties.Settings.Default.Save();
+                }
+            };
+
+            ChooseFileButton.Click += (object? sender, EventArgs e) => {
+                DialogResult result = FolderDialog.ShowDialog();
+                if (result == DialogResult.OK) {
+                    AutoSaveLocation.Text = FolderDialog.SelectedPath;
                 }
             };
         }
@@ -81,11 +102,6 @@ namespace bruhshot {
 
         void onSelectionChangedShape(object? sender, EventArgs e) {
             Properties.Settings.Default.Shape = (string)ShapeSelector.SelectedItem;
-            Properties.Settings.Default.Save();
-        }
-
-        void onShapeFillChanged(object? sender, EventArgs e) {
-            Properties.Settings.Default.FilledShape = ShapeFillCheck.Checked;
             Properties.Settings.Default.Save();
         }
 
