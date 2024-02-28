@@ -348,6 +348,9 @@ namespace bruhshot {
             }
             if (mouseDownTransparent) {
                 endingClickPoint = new Point(e.Location.X+1,e.Location.Y+1);
+                if ((ModifierKeys & Keys.Shift) == Keys.Shift) {
+                    endingClickPoint = CreateSquarePoints(startingClickPoint, endingClickPoint);
+                }
                 Invalidate();
             }
         }
@@ -375,8 +378,8 @@ namespace bruhshot {
         }
 
         void InfoPanelDown(object? sender, MouseEventArgs e) {
-            CornerPosCheck(e.Location);
-            if (dragId != null) return;
+            //CornerPosCheck(e.Location);
+            //if (dragId != null) return;
             infoPanelDown = true;
             lastClickPointTools = e.Location;
             switch (currentTool) {
@@ -426,6 +429,13 @@ namespace bruhshot {
             return new Rectangle(new Point(rectangle.X - size / 2, rectangle.Y - size / 2), rectangle.Size);
         }
 
+        Point CreateSquarePoints(Point startLoc, Point endLoc) {
+            int size = (int)Math.Min(Math.Abs(endLoc.X - startLoc.X), Math.Abs(endLoc.Y - startLoc.Y));
+            int xSign = Math.Sign(endLoc.X - startLoc.X);
+            int ySign = Math.Sign(endLoc.Y - startLoc.Y);
+            return new Point(startLoc.X + size * xSign, startLoc.Y + size * ySign);
+        }
+
         void InfoPanelMove(object? sender, MouseEventArgs e) {
             CornerRectChange(e.Location);
             if (dragId != null) return;
@@ -468,6 +478,9 @@ namespace bruhshot {
                     break;
                 case "Shape":
                     edits[edits.Count - 1]["EndLocation"] = e.Location;
+                    if ((ModifierKeys & Keys.Shift) == Keys.Shift) {
+                        edits[edits.Count - 1]["EndLocation"] = CreateSquarePoints(edits[edits.Count - 1]["StartLocation"], e.Location);
+                    }
                     Invalidate();
                     break;
                 default:
