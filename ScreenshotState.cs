@@ -671,7 +671,8 @@ namespace bruhshot {
         void showSettings(object? sender, EventArgs e) {
             if (settingsForm.IsDisposed) {
                 settingsForm = new SettingsForm();
-                settingsForm.Location = startingClickPoint;
+                Rectangle crop = getCropRectangle();
+                settingsForm.Location = new Point(crop.Right-settingsForm.Width, crop.Top);
                 settingsForm.Show();
             }
         }
