@@ -279,7 +279,7 @@ namespace bruhshot {
 
         void CornerPosCheck(Point loc) {
             Rectangle[] cornerRects = GetCornerRectangles();
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < cornerRects.Length; i++) {
                 Rectangle rect = cornerRects[i];
                 if (!rectangleContains(loc, rect)) continue;
                 dragId = i;
@@ -510,6 +510,9 @@ namespace bruhshot {
         const int DRAG_SIZE = 8;
         Rectangle[] GetCornerRectangles(int extraSize = 0) {
             Rectangle crop = getCropRectangle();
+            if (crop.Width < 22 || crop.Height < 22) {
+                return new Rectangle[0];
+            }
             const int smallSize = DRAG_SIZE - 2;
             Rectangle rect1 = new Rectangle(crop.X - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize*2, DRAG_SIZE + extraSize*2); // top left
             Rectangle rect2 = new Rectangle(crop.Right - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // top right
