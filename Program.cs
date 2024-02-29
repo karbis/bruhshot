@@ -1,8 +1,5 @@
 using bruhshot.Properties;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace bruhshot {
     static class Program {

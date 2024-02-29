@@ -1,7 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Reflection;
 using Button = System.Windows.Forms.Button;
-using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace bruhshot {
     public partial class ScreenshotState : Form {
