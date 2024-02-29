@@ -1,5 +1,8 @@
 using bruhshot.Properties;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace bruhshot {
     static class Program {
@@ -74,7 +77,6 @@ namespace bruhshot {
             };
 
             contextMenu.Items.AddRange(new ToolStripItem[] { screenshotButton, settingsButton, exitButton });
-
 
             _globalKeyboardHook = new GlobalKeyboardHook();
             _globalKeyboardHook.KeyboardPressed += OnKeyPressed;

@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualBasic.Devices;
-using Microsoft.VisualBasic.Logging;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 using System.Reflection;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Button = System.Windows.Forms.Button;
+using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace bruhshot {
     public partial class ScreenshotState : Form {
@@ -79,6 +76,7 @@ namespace bruhshot {
             }
 
             undoManager.makeWaypoint(edits);
+            GlobalMouseMove();
 
             //Opacity = 0.25;
         }
@@ -115,7 +113,7 @@ namespace bruhshot {
                         break;
                     case "Line":
                         using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
-                            pen.Width = v["Thickness"]; 
+                            pen.Width = v["Thickness"];
                             x = v["StartLocation"].X - location.X;
                             y = v["StartLocation"].Y - location.Y;
                             int x2 = v["EndLocation"].X - location.X;
@@ -126,12 +124,12 @@ namespace bruhshot {
                             double angle = -Math.Atan2(y2 - y, x2 - x);
                             double RAD_CONSTANT = Math.PI / 180;
                             Point lineSize = new Point(x2 - x, y2 - y);
-                            double arrowSize = Math.Min(40, Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2))/2);
+                            double arrowSize = Math.Min(40, Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2)) / 2);
                             int offsetX = (int)(Math.Sin(angle + 71 * RAD_CONSTANT) * arrowSize);
                             int offsetY = (int)(Math.Cos(angle + 71 * RAD_CONSTANT) * arrowSize);
                             int offsetX2 = (int)(Math.Sin(angle - 71 * RAD_CONSTANT) * arrowSize);
                             int offsetY2 = (int)(Math.Cos(angle - 71 * RAD_CONSTANT) * arrowSize);
-                            g.DrawLine(pen, new Point(x2,y2),new Point(x2-offsetX,y2-offsetY));
+                            g.DrawLine(pen, new Point(x2, y2), new Point(x2 - offsetX, y2 - offsetY));
                             g.DrawLine(pen, new Point(x2, y2), new Point(x2 + offsetX2, y2 + offsetY2));
                         }
                         break;
@@ -278,7 +276,7 @@ namespace bruhshot {
         }
 
         void CornerPosCheck(Point loc) {
-            Rectangle[] cornerRects = GetCornerRectangles();
+            Rectangle[] cornerRects = GetCornerRectangles(1);
             for (int i = 0; i < cornerRects.Length; i++) {
                 Rectangle rect = cornerRects[i];
                 if (!rectangleContains(loc, rect)) continue;
@@ -318,6 +316,9 @@ namespace bruhshot {
                         startingClickPoint = loc;
                         break;
                 }
+                if ((ModifierKeys & Keys.Shift) == Keys.Shift) {
+                    startingClickPoint = CreateSquarePoints(endingClickPoint, loc);
+                }
                 Invalidate();
             }
         }
@@ -347,7 +348,7 @@ namespace bruhshot {
                 return;
             }
             if (mouseDownTransparent) {
-                endingClickPoint = new Point(e.Location.X+1,e.Location.Y+1);
+                endingClickPoint = new Point(e.Location.X + 1, e.Location.Y + 1);
                 if ((ModifierKeys & Keys.Shift) == Keys.Shift) {
                     endingClickPoint = CreateSquarePoints(startingClickPoint, endingClickPoint);
                 }
@@ -357,7 +358,7 @@ namespace bruhshot {
         void TransparentMouseUp(object? sender, MouseEventArgs e) {
             if (e.Button != MouseButtons.Left) { return; }
             dragId = null;
-            if (rectangleContains(new Point(e.Location.X+1,e.Location.Y+1), getCropRectangle())) {
+            if (rectangleContains(new Point(e.Location.X + 1, e.Location.Y + 1), getCropRectangle())) {
                 InfoPanelUp(sender, e);
                 return;
             }
@@ -405,7 +406,7 @@ namespace bruhshot {
                     edits.Add(new Dictionary<string, dynamic> { { "Type", "Line" }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") }, { "Shape", getSetting("LineShape") } });
                     break;
                 case "Shape":
-                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Shape" }, { "Shape", ((getSetting("FilledShape")) ? "Filled" : "") + getSetting("Shape") }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Filled", false }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") } });
+                    edits.Add(new Dictionary<string, dynamic> { { "Type", "Shape" }, { "Shape", ((getSetting("FilledShape")) ? "Filled" : "") + getSetting("Shape") }, { "StartLocation", e.Location }, { "EndLocation", e.Location }, { "Color", getSetting("Color") }, { "Thickness", getSetting("Thickness") } });
                     break;
                 default:
                     break;
@@ -467,9 +468,9 @@ namespace bruhshot {
                         int x = edit["StartLocation"].X;
                         int y2 = edit["EndLocation"].Y;
                         int y = edit["StartLocation"].Y;
-                        double angle = -Math.Atan2(y2-y, x2-x);
+                        double angle = -Math.Atan2(y2 - y, x2 - x);
                         const double FIFTEEN_DEGREES = Math.PI / 180 * 15;
-                        angle = Math.Floor(angle / FIFTEEN_DEGREES + FIFTEEN_DEGREES/2  ) * FIFTEEN_DEGREES + FIFTEEN_DEGREES*6;
+                        angle = Math.Floor(angle / FIFTEEN_DEGREES + FIFTEEN_DEGREES / 2) * FIFTEEN_DEGREES + FIFTEEN_DEGREES * 6;
                         Point lineSize = new Point(x2 - x, y2 - y);
                         double lineLength = Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2));
                         edit["EndLocation"] = new Point(x + (int)(Math.Sin(angle) * lineLength), y + (int)(Math.Cos(angle) * lineLength));
@@ -585,7 +586,7 @@ namespace bruhshot {
                 }
             }
 
-            if (currentTool == "Pen") {
+            if (currentTool == "Pen" && ToolBar.Visible) {
                 using (SolidBrush brush = new SolidBrush(getSetting("Color"))) {
                     Point cursorPos = Cursor.Position;
                     int thickness = getSetting("Thickness");
@@ -685,19 +686,35 @@ namespace bruhshot {
             InvisibleTextbox.Enabled = false;
         }
 
-        void GlobalMouseMove(object? sender, MouseEventArgs e) {
-            if (dragId != null || infoPanelDown) {
+        string[] CursorIcons = new string[8] { "SizeNWSE", "SizeNESW", "SizeNESW", "SizeNWSE", "SizeNS", "SizeWE", "SizeNS", "SizeWE" };
+        void GlobalMouseMove(object? sender = null, MouseEventArgs? e = null) {
+            if (mouseDownTransparent && dragId == null) {
                 Cursor.Current = Cursors.Default;
                 return;
             }
 
-            if (currentTool == "None" && rectangleContains(Cursor.Position, getCropRectangle())) {
-                Cursor.Current = Cursors.SizeAll;
+            Rectangle[] cornerRects = GetCornerRectangles(1);
+            for (int i = 0; i < cornerRects.Length; i++) {
+                Rectangle rect = cornerRects[i];
+                if (!rectangleContains(Cursor.Position, rect)) continue;
+                switch (CursorIcons[i]) {
+                    case "SizeNWSE":
+                        Cursor.Current = Cursors.SizeNWSE;
+                        break;
+                    case "SizeNESW":
+                        Cursor.Current = Cursors.SizeNESW;
+                        break;
+                    case "SizeNS":
+                        Cursor.Current = Cursors.SizeNS;
+                        break;
+                    case "SizeWE":
+                        Cursor.Current = Cursors.SizeWE;
+                        break;
+                }
                 return;
             }
 
-            foreach (Rectangle rect in GetCornerRectangles()) {
-                if (!rectangleContains(Cursor.Position, rect)) continue;
+            if (currentTool == "None" && rectangleContains(Cursor.Position, getCropRectangle())) {
                 Cursor.Current = Cursors.SizeAll;
                 return;
             }
