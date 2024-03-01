@@ -534,7 +534,7 @@ namespace bruhshot {
             Point resolutionDrawPoint = new Point(regionRectangle.X, regionRectangle.Y - 22);
             if (resolutionDrawPoint.Y < 0) {
                 resolutionDrawPoint.Y = regionRectangle.Bottom + 5;
-                if (resolutionDrawPoint.Y > Size.Height) {
+                if (resolutionDrawPoint.Y > Size.Height - 17) {
                     resolutionDrawPoint.Y = 5;
                 }
             }
