@@ -172,7 +172,7 @@ namespace bruhshot {
                                     g.DrawEllipse(a, b);
                                     break;
                                 case "Triangle":
-                                    g.DrawPath(a, CreateTriangle(v["StartLocation"].X, v["StartLocation"].Y, v["EndLocation"].X, v["EndLocation"].Y));
+                                    g.DrawPath(a, CreateTriangle(x, y, x2+x, y2+y));
                                     break;
                                 case "FilledSquare":
                                     g.FillRectangle(c, b);
