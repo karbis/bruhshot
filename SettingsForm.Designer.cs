@@ -136,7 +136,7 @@
             // 
             ShapeSelector.DropDownStyle = ComboBoxStyle.DropDownList;
             ShapeSelector.FormattingEnabled = true;
-            ShapeSelector.Items.AddRange(new object[] { "Circle", "Square" });
+            ShapeSelector.Items.AddRange(new object[] { "Circle", "Square", "Triangle" });
             ShapeSelector.Location = new Point(188, 92);
             ShapeSelector.Name = "ShapeSelector";
             ShapeSelector.Size = new Size(121, 23);
@@ -225,7 +225,7 @@
             // 
             LineShapeDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
             LineShapeDropdown.FormattingEnabled = true;
-            LineShapeDropdown.Items.AddRange(new object[] { "Arrow", "Line" });
+            LineShapeDropdown.Items.AddRange(new object[] { "Arrow", "Dashed", "Line" });
             LineShapeDropdown.Location = new Point(188, 141);
             LineShapeDropdown.Name = "LineShapeDropdown";
             LineShapeDropdown.Size = new Size(121, 23);
@@ -337,7 +337,7 @@
             // 
             // ChooseFileButton
             // 
-            ChooseFileButton.Location = new Point(158, 55);
+            ChooseFileButton.Location = new Point(156, 55);
             ChooseFileButton.Name = "ChooseFileButton";
             ChooseFileButton.Size = new Size(58, 23);
             ChooseFileButton.TabIndex = 17;
@@ -347,9 +347,9 @@
             // AutoSaveLocation
             // 
             AutoSaveLocation.BorderStyle = BorderStyle.FixedSingle;
-            AutoSaveLocation.Location = new Point(222, 55);
+            AutoSaveLocation.Location = new Point(218, 55);
             AutoSaveLocation.Name = "AutoSaveLocation";
-            AutoSaveLocation.Size = new Size(85, 23);
+            AutoSaveLocation.Size = new Size(89, 23);
             AutoSaveLocation.TabIndex = 16;
             AutoSaveLocation.TextAlign = HorizontalAlignment.Right;
             // 
@@ -381,9 +381,9 @@
             label8.Font = new Font("Segoe UI", 12F, FontStyle.Italic, GraphicsUnit.Point);
             label8.Location = new Point(129, 45);
             label8.Name = "label8";
-            label8.Size = new Size(39, 21);
+            label8.Size = new Size(51, 21);
             label8.TabIndex = 8;
-            label8.Text = "v1.5";
+            label8.Text = "v1.5.1";
             // 
             // label9
             // 

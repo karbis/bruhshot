@@ -80,6 +80,27 @@ namespace bruhshot {
             //Opacity = 0.25;
         }
 
+        GraphicsPath CreateTriangle(int x, int y, int x2, int y2) {
+            GraphicsPath path = new GraphicsPath();
+            if (x > x2) {
+                int tempX = x;
+                x = x2;
+                x2 = tempX;
+            }
+            if (y > y2) {
+                int tempY = y;
+                y = y2;
+                y2 = tempY;
+            }
+            int width = x2 - x;
+            path.StartFigure();
+            path.AddLine(new Point(x, y2), new Point(x+width/2, y));
+            path.AddLine(new Point(x+width/2, y), new Point(x2, y2));
+            path.CloseFigure();
+
+            return path;
+        }
+
         void applyImageEdits(Graphics g, bool relative) {
             Size size = Size;
             Point location = new Point();
@@ -113,6 +134,7 @@ namespace bruhshot {
                     case "Line":
                         using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
                             pen.Width = v["Thickness"];
+                            pen.DashStyle = v["Shape"] == "Dashed" ? DashStyle.Dash : DashStyle.Solid;
                             x = v["StartLocation"].X - location.X;
                             y = v["StartLocation"].Y - location.Y;
                             int x2 = v["EndLocation"].X - location.X;
@@ -149,11 +171,17 @@ namespace bruhshot {
                                 case "Circle":
                                     g.DrawEllipse(a, b);
                                     break;
+                                case "Triangle":
+                                    g.DrawPath(a, CreateTriangle(v["StartLocation"].X, v["StartLocation"].Y, v["EndLocation"].X, v["EndLocation"].Y));
+                                    break;
                                 case "FilledSquare":
                                     g.FillRectangle(c, b);
                                     break;
                                 case "FilledCircle":
                                     g.FillEllipse(c, b);
+                                    break;
+                                case "FilledTriangle":
+                                    g.FillPath(c, CreateTriangle(v["StartLocation"].X, v["StartLocation"].Y, v["EndLocation"].X, v["EndLocation"].Y));
                                     break;
                             }
                         }
@@ -514,14 +542,16 @@ namespace bruhshot {
                 return new Rectangle[0];
             }
             const int smallSize = DRAG_SIZE - 2;
-            Rectangle rect1 = new Rectangle(crop.X - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize*2, DRAG_SIZE + extraSize*2); // top left
-            Rectangle rect2 = new Rectangle(crop.Right - DRAG_SIZE / 2 - 1, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // top right
-            Rectangle rect3 = new Rectangle(crop.X - DRAG_SIZE / 2 - 1, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // bottom left
-            Rectangle rect4 = new Rectangle(crop.Right - DRAG_SIZE / 2 - 1, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + extraSize * 2, DRAG_SIZE + extraSize * 2); // bottom right
-            Rectangle rect5 = new Rectangle(crop.X - smallSize / 2 - 1 + crop.Width/2, crop.Y - smallSize / 2 - extraSize, smallSize + extraSize * 2, smallSize + extraSize * 2); // top center
-            Rectangle rect6 = new Rectangle(crop.X - smallSize / 2 - 1, crop.Y - smallSize / 2 - extraSize + crop.Height/2, smallSize + extraSize * 2, smallSize + extraSize * 2); // left center
-            Rectangle rect7 = new Rectangle(crop.X - smallSize / 2 - 1 + crop.Width/2, crop.Bottom - smallSize / 2 - extraSize, smallSize + extraSize * 2, smallSize + extraSize * 2); // bottom center
-            Rectangle rect8 = new Rectangle(crop.Right - smallSize / 2 - 1, crop.Y - smallSize / 2 - extraSize + crop.Height/2, smallSize + extraSize * 2, smallSize + extraSize * 2); // right center
+            int doubleSize = extraSize * 2;
+            Rectangle rect1 = new Rectangle(crop.X - DRAG_SIZE / 2 - extraSize, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + doubleSize, DRAG_SIZE + doubleSize); // top left
+            Rectangle rect2 = new Rectangle(crop.Right - DRAG_SIZE / 2 - extraSize, crop.Y - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + doubleSize, DRAG_SIZE + doubleSize); // top right
+            Rectangle rect3 = new Rectangle(crop.X - DRAG_SIZE / 2 - extraSize, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + doubleSize, DRAG_SIZE + doubleSize); // bottom left
+            Rectangle rect4 = new Rectangle(crop.Right - DRAG_SIZE / 2 - extraSize, crop.Bottom - DRAG_SIZE / 2 - extraSize, DRAG_SIZE + doubleSize, DRAG_SIZE + doubleSize); // bottom right
+            Rectangle rect5 = new Rectangle(crop.X - smallSize / 2 - extraSize + crop.Width/2, crop.Y - smallSize / 2 - extraSize, smallSize + doubleSize, smallSize + doubleSize); // top center
+            Rectangle rect6 = new Rectangle(crop.X - smallSize / 2 - extraSize, crop.Y - smallSize / 2 - extraSize + crop.Height/2, smallSize + doubleSize, smallSize + doubleSize); // left center
+            Rectangle rect7 = new Rectangle(crop.X - smallSize / 2 - extraSize + crop.Width / 2, crop.Bottom - smallSize / 2 - extraSize, smallSize + doubleSize, smallSize + doubleSize); // bottom center
+            Rectangle rect8 = new Rectangle(crop.Right - smallSize / 2 - extraSize, crop.Y - smallSize / 2 - extraSize + crop.Height / 2, smallSize + doubleSize, smallSize + doubleSize); // right center
+
             return new Rectangle[8] { rect1, rect2, rect3, rect4, rect5, rect6, rect7, rect8 };
         }
 
