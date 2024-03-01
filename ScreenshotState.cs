@@ -607,7 +607,7 @@ namespace bruhshot {
                         e.Graphics.DrawRectangle(pen, rect);
                     }
                 }
-                using (Brush brush = new SolidBrush(Color.FromArgb(128, 44, 44, 44))) {
+                using (Brush brush = new SolidBrush(Color.FromArgb(128, 0, 0, 0))) {
                     Rectangle[] cornerRectangles = GetCornerRectangles();
                     foreach (Rectangle rect in cornerRectangles) {
                         e.Graphics.FillRectangle(brush, rect);
