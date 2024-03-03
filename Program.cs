@@ -67,7 +67,7 @@ namespace bruhshot {
             settingsButton = new ToolStripMenuItem();
             settingsButton.Text = "Settings";
             settingsButton.Click += (object? sender, EventArgs e) => {
-                if (settingForm != null) return;
+                if (settingForm != null && !settingForm.IsDisposed) return;
                 settingForm = new SettingsForm();
                 settingForm.StartPosition = FormStartPosition.CenterScreen;
                 settingForm.Show();
