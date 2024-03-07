@@ -586,6 +586,8 @@ namespace bruhshot {
                 dashedPen.DashStyle = DashStyle.Dash;
                 dashedPen.Width = 2f;
 
+                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
+
                 if (InvisibleTextbox.Focused) {
                     Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
                     Point textLocation = lastIndex["Location"];
@@ -595,7 +597,6 @@ namespace bruhshot {
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
                 }
 
-                e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
                 dashedPen.Dispose();
 
                 using (Brush brush = new SolidBrush(Color.White)) {
