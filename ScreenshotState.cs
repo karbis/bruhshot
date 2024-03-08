@@ -584,7 +584,7 @@ namespace bruhshot {
             if (endingClickPoint.X != -1) {
                 Pen dashedPen = new Pen(Color.LightGray);
                 dashedPen.DashStyle = DashStyle.Dash;
-                dashedPen.Width = 2f;
+                dashedPen.Width = 1.75f;
 
                 e.Graphics.DrawRectangle(dashedPen, new Rectangle(regionRectangle.X - 1, regionRectangle.Y - 1, regionRectangle.Width + 1, regionRectangle.Height + 1));
 
@@ -594,7 +594,7 @@ namespace bruhshot {
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
                     SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], lastIndex["Font"]);
-                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(50, (int)textSize.Height)));
+                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(25, (int)textSize.Height)));
                 }
 
                 dashedPen.Dispose();
