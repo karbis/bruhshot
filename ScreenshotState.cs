@@ -603,7 +603,7 @@ namespace bruhshot {
                     SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], lastIndex["Font"]);
                     Point caret = InvisibleTextbox.GetPositionFromCharIndex(InvisibleTextbox.SelectionStart);
                     e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(Math.Max(50, (int)textSize.Width), caret.X+1), Math.Max(caret.Y+lineHeight+3, Math.Max(lineHeight+4, (int)textSize.Height))));
-                    using (Brush brush = new SolidBrush(Color.FromArgb(196, Color.LightGray))) {
+                    using (Brush brush = new SolidBrush(Color.FromArgb(228, Color.LightGray))) {
                         e.Graphics.FillRectangle(brush, new Rectangle(caret.X + textLocation.X, caret.Y + textLocation.Y-2, 1, lineHeight + 4));
                     }
                 }
