@@ -39,7 +39,7 @@ namespace bruhshot {
             SaveButton = new Button();
             PenTool = new Button();
             Seperator2 = new Panel();
-            InvisibleTextbox = new TextBox();
+            InvisibleTextbox = new RichTextBox();
             toolTip1 = new ToolTip(components);
             ToolBar.SuspendLayout();
             SuspendLayout();
@@ -206,7 +206,7 @@ namespace bruhshot {
             // 
             // InvisibleTextbox
             // 
-            InvisibleTextbox.AcceptsReturn = true;
+            //InvisibleTextbox.AcceptsReturn = true;
             InvisibleTextbox.AcceptsTab = true;
             InvisibleTextbox.Enabled = false;
             InvisibleTextbox.Location = new Point(-1167, -1154);
@@ -241,7 +241,7 @@ namespace bruhshot {
         private Panel Seperator2;
         private Button ClipboardButton;
         private Button TextTool;
-        private TextBox InvisibleTextbox;
+        private RichTextBox InvisibleTextbox;
         private ToolTip toolTip1;
         private Button LineTool;
         private Button RedoButton;
