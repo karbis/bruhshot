@@ -50,11 +50,6 @@ namespace bruhshot {
             SettingsButton.Click += showSettings;
             CloseButton.Click += closeForm;
             InvisibleTextbox.LostFocus += disableTextbox;
-            InvisibleTextbox.Size = Size;
-            InvisibleTextbox.Location = new Point(-Size.Width, -Size.Height);
-            InvisibleTextbox.SelectionChanged += (object? sender, EventArgs e) => {
-                Invalidate();
-            };
             MouseMove += GlobalMouseMove;
 
             //FullImage.Paint += imageDarken;
@@ -596,16 +591,10 @@ namespace bruhshot {
                 if (InvisibleTextbox.Focused) {
                     Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
                     Point textLocation = lastIndex["Location"];
-                    InvisibleTextbox.Font = lastIndex["Font"];
-                    int lineHeight = (int)InvisibleTextbox.Font.Size;
                     dashedPen.Width = 1f;
                     dashedPen.Color = Color.FromArgb(128, Color.LightGray);
                     SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], lastIndex["Font"]);
-                    Point caret = InvisibleTextbox.GetPositionFromCharIndex(InvisibleTextbox.SelectionStart);
-                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(Math.Max(50, (int)textSize.Width), caret.X+1), Math.Max(caret.Y+lineHeight+3, Math.Max(lineHeight+4, (int)textSize.Height))));
-                    using (Brush brush = new SolidBrush(Color.FromArgb(228, Color.LightGray))) {
-                        e.Graphics.FillRectangle(brush, new Rectangle(caret.X + textLocation.X, caret.Y + textLocation.Y-2, 1, lineHeight + 4));
-                    }
+                    e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(25, (int)textSize.Height)));
                 }
 
                 dashedPen.Dispose();
@@ -702,7 +691,7 @@ namespace bruhshot {
 
         void onTextChanged(object? sender, EventArgs e) {
             if (sender == null) { return; }
-            edits[edits.Count - 1]["Text"] = ((System.Windows.Forms.RichTextBox)sender).Text;
+            edits[edits.Count - 1]["Text"] = ((System.Windows.Forms.TextBox)sender).Text;
             Invalidate();
         }
 
