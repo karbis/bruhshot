@@ -23,6 +23,7 @@ namespace bruhshot {
             image = screenImage;
             TopMost = true;
             InitializeComponent();
+            Focus();
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             KeyPreview = true;
