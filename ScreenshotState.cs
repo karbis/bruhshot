@@ -15,7 +15,7 @@ namespace bruhshot {
         string currentTool = "None";
         Button[] tools;
         UndoManager undoManager = new UndoManager();
-        SettingsForm settingsForm = new SettingsForm();
+        public SettingsForm settingsForm = new SettingsForm();
         Bitmap image;
         int? dragId;
 

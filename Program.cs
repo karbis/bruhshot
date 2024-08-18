@@ -42,6 +42,7 @@ namespace bruhshot {
                     }
                 }
             }
+
             return bitmap;
         }
 
@@ -119,6 +120,10 @@ namespace bruhshot {
                     startScreenshotting();
                 } else if (key == "escape") {
                     if (screenshotState != null && !screenshotState.IsDisposed) {
+                        if (!screenshotState.settingsForm.IsDisposed) {
+                            screenshotState.settingsForm.Dispose();
+                            return;
+                        }
                         screenshotState.Close();
                     }
                 }
