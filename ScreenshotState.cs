@@ -768,7 +768,9 @@ namespace bruhshot {
 
             QuickColorSetting.MouseDown += (object? _, MouseEventArgs args) => {
                 if (args.Button != MouseButtons.Left) return;
-                if (settingsForm != null) return;
+                if (settingsForm != null) {
+                    settingsForm.Dispose();
+                };
                 QuickSettingsStrip.Close();
                 settingsForm = new SettingsForm();
                 settingsForm.Location = new Point(-1000, -1000);
