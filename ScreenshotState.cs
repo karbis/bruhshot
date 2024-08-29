@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.Reflection;
 using Button = System.Windows.Forms.Button;
 
@@ -15,7 +16,7 @@ namespace bruhshot {
         string currentTool = "None";
         Button[] tools;
         UndoManager undoManager = new UndoManager();
-        public SettingsForm settingsForm = new SettingsForm();
+        public SettingsForm? settingsForm = null;
         Bitmap image;
         int? dragId;
 
@@ -59,7 +60,6 @@ namespace bruhshot {
             newImage = image;
             DoubleBuffered = true;
             ToolBar.Visible = false;
-            settingsForm.Dispose();
             tools = new Button[] { PenTool, TextTool, LineTool, ShapeTool };
 
             InvisibleTextbox.TextChanged += onTextChanged;
@@ -77,6 +77,7 @@ namespace bruhshot {
 
             undoManager.makeWaypoint(edits);
             GlobalMouseMove();
+            setupQuickSettings();
 
             //Opacity = 0.25;
         }
@@ -646,7 +647,7 @@ namespace bruhshot {
         void onFormClosed(object? sender, FormClosedEventArgs e) {
             newImage.Dispose();
             resolutionDisplayFont.Dispose();
-            if (!settingsForm.IsDisposed) {
+            if (settingsForm != null && !settingsForm.IsDisposed) {
                 settingsForm.Dispose();
             }
         }
@@ -701,7 +702,7 @@ namespace bruhshot {
         }
 
         void showSettings(object? sender, EventArgs e) {
-            if (settingsForm.IsDisposed) {
+            if (settingsForm == null || settingsForm.IsDisposed) {
                 settingsForm = new SettingsForm();
                 Rectangle crop = getCropRectangle();
                 settingsForm.Location = new Point(crop.Right-settingsForm.Width, crop.Top);
@@ -750,6 +751,38 @@ namespace bruhshot {
                 return;
             }
             Cursor.Current = Cursors.Default;
+        }
+
+        void setupQuickSettings() {
+
+            QuickSettingsStrip.Opening += (_, _) => {
+                // generate color preview
+                Bitmap map = new Bitmap(16,16);
+                using Graphics g = Graphics.FromImage(map);
+                using Pen pen = new Pen(Color.Black);
+                g.Clear(getSetting("Color"));
+                g.DrawRectangle(pen, new Rectangle(0, 0, 15, 15));
+                QuickColorSetting.Image = map;
+                QuickFillSetting.Checked = getSetting("FilledShape");
+            };
+
+            QuickColorSetting.MouseDown += (object? _, MouseEventArgs args) => {
+                if (args.Button != MouseButtons.Left) return;
+                if (settingsForm != null) return;
+                QuickSettingsStrip.Close();
+                settingsForm = new SettingsForm();
+                settingsForm.Location = new Point(-1000, -1000);
+                settingsForm.Show();
+                settingsForm.button1.PerformClick();
+                settingsForm.Dispose();
+                settingsForm = null;
+            };
+            QuickFillSetting.MouseDown += (object? _, MouseEventArgs args) => {
+                if (args.Button != MouseButtons.Left) return;
+                SettingsForm tempForm = new SettingsForm();
+                tempForm.ShapeFillCheck.Checked = !tempForm.ShapeFillCheck.Checked;
+                tempForm.Dispose();
+            };
         }
     }
 }

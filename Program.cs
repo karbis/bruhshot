@@ -102,7 +102,7 @@ namespace bruhshot {
         }
 
         void startScreenshotting() {
-            if (screenshotState == null || (screenshotState != null && screenshotState.IsDisposed)) {
+            if (screenshotState == null || screenshotState.IsDisposed) {
                 screenshotState = new ScreenshotState(takeScreenshot());
                 screenshotState.Show();
                 screenshotState.Focus();
@@ -120,9 +120,11 @@ namespace bruhshot {
                     startScreenshotting();
                 } else if (key == "escape") {
                     if (screenshotState != null && !screenshotState.IsDisposed) {
-                        if (!screenshotState.settingsForm.IsDisposed) {
+                        if (screenshotState.settingsForm != null && !screenshotState.settingsForm.IsDisposed) {
+                            if (screenshotState.settingsForm.DialogOpen) return;
                             screenshotState.settingsForm.Dispose();
-                            return;
+                            screenshotState.settingsForm = null;
+							return;
                         }
                         screenshotState.Close();
                     }

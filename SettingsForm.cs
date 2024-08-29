@@ -1,5 +1,7 @@
 ﻿
 
+using System.Diagnostics;
+
 namespace bruhshot {
     public partial class SettingsForm : Form {
         void updateFontText() {
@@ -13,6 +15,7 @@ namespace bruhshot {
                 Properties.Settings.Default.Save();
             };
         }
+        public bool DialogOpen = false;
 
         public SettingsForm() {
             TopMost = true;
@@ -47,7 +50,9 @@ namespace bruhshot {
 
             FontPickerButton.Click += (object? sender, EventArgs e) => {
                 FontDialog.Font = Properties.Settings.Default.TextFont;
+                DialogOpen = true;
                 DialogResult result = FontDialog.ShowDialog();
+                DialogOpen = false;
                 if (result == DialogResult.OK) {
                     Properties.Settings.Default.TextFont = FontDialog.Font;
                     updateFontText();
@@ -56,7 +61,9 @@ namespace bruhshot {
             };
 
             ChooseFileButton.Click += (object? sender, EventArgs e) => {
+                DialogOpen = true;
                 DialogResult result = FolderDialog.ShowDialog();
+                DialogOpen = false;
                 if (result == DialogResult.OK) {
                     AutoSaveLocation.Text = FolderDialog.SelectedPath;
                 }
@@ -65,12 +72,12 @@ namespace bruhshot {
 
         private void button1_Click(object sender, EventArgs e) {
             ColorDialog.Color = Properties.Settings.Default.Color;
-            DialogResult result = ColorDialog.ShowDialog();
-            if (result == DialogResult.OK) {
-                Properties.Settings.Default.Color = ColorDialog.Color;
-                ColorShowcasePanel.BackColor = Properties.Settings.Default.Color;
-                Properties.Settings.Default.Save();
-            }
+            DialogOpen = true;
+            ColorDialog.ShowDialog();
+            DialogOpen = false;
+            Properties.Settings.Default.Color = ColorDialog.Color;
+            ColorShowcasePanel.BackColor = Properties.Settings.Default.Color;
+            Properties.Settings.Default.Save();
         }
 
         GlobalKeyboardHook? _globalKeyboardHook;
