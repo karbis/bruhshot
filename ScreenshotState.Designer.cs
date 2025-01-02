@@ -99,18 +99,18 @@ namespace bruhshot {
 			// 
 			QuickSettingsStrip.Items.AddRange(new ToolStripItem[] { QuickColorSetting, QuickFillSetting });
 			QuickSettingsStrip.Name = "contextMenuStrip1";
-			QuickSettingsStrip.Size = new Size(181, 70);
+			QuickSettingsStrip.Size = new Size(125, 48);
 			// 
 			// QuickColorSetting
 			// 
 			QuickColorSetting.Name = "QuickColorSetting";
-			QuickColorSetting.Size = new Size(180, 22);
+			QuickColorSetting.Size = new Size(124, 22);
 			QuickColorSetting.Text = "Color";
 			// 
 			// QuickFillSetting
 			// 
 			QuickFillSetting.Name = "QuickFillSetting";
-			QuickFillSetting.Size = new Size(180, 22);
+			QuickFillSetting.Size = new Size(124, 22);
 			QuickFillSetting.Text = "Shape Fill";
 			// 
 			// ShapeTool

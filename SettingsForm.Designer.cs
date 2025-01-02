@@ -383,7 +383,7 @@
 			label8.Name = "label8";
 			label8.Size = new Size(51, 21);
 			label8.TabIndex = 8;
-			label8.Text = "v1.5.1";
+			label8.Text = "v1.5.2";
 			// 
 			// label9
 			// 
@@ -423,7 +423,7 @@
 			label10.Name = "label10";
 			label10.Size = new Size(31, 15);
 			label10.TabIndex = 1;
-			label10.Text = "2024";
+			label10.Text = "2025";
 			// 
 			// linkLabel1
 			// 
@@ -478,7 +478,7 @@
         private Button FontPickerButton;
         private ComboBox LineShapeDropdown;
         private Label label7;
-        private TabPage EditorPage;
+        public TabPage EditorPage;
         private TabPage OutputPage;
         private TabPage InfoPage;
         private Label label8;

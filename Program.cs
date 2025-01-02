@@ -2,7 +2,7 @@ using bruhshot.Properties;
 using System.Runtime.InteropServices;
 
 namespace bruhshot {
-    static class Program {
+    static class Program {  
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -20,13 +20,14 @@ namespace bruhshot {
         ScreenshotState? screenshotState;
 
         Bitmap takeScreenshot() {
-            Screen? curScreen = Screen.FromPoint(Cursor.Position);
+			Screen? curScreen = Screen.FromPoint(Cursor.Position);
             if (curScreen == null) { return new Bitmap(1, 1); }
             Rectangle screenBounds = curScreen.Bounds;
-            Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
+			Bitmap bitmap = new Bitmap(screenBounds.Width, screenBounds.Height);
+
             using (Graphics g = Graphics.FromImage(bitmap)) {
                 g.Clear(Color.Black);
-                g.CopyFromScreen(curScreen.Bounds.Location, Point.Empty, screenBounds.Size);
+                g.CopyFromScreen(screenBounds.Location, Point.Empty, screenBounds.Size);
 
                 if (Settings.Default.CaptureCursor) {
                     try {
@@ -49,9 +50,10 @@ namespace bruhshot {
         SettingsForm? settingForm;
         ToolStripMenuItem settingsButton;
         public CustomApplicationContext() {
-            // Initialize Tray Icon
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+			// Initialize Tray Icon
 
-            var contextMenu = new ContextMenuStrip();
+			var contextMenu = new ContextMenuStrip();
             ToolStripMenuItem titleThingy = new ToolStripMenuItem("Bruhshot", null, null, "Bruhshot");
             titleThingy.Click += showInfo;
             contextMenu.Items.Add(titleThingy);
@@ -163,6 +165,6 @@ namespace bruhshot {
         [DllImport("user32.dll")]
         static extern bool DrawIcon(IntPtr hDC, int X, int Y, IntPtr hIcon);
 
-        const Int32 CURSOR_SHOWING = 0x00000001;
+		const Int32 CURSOR_SHOWING = 0x00000001;
     }
 }

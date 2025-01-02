@@ -15,7 +15,10 @@ namespace bruhshot
         public void makeWaypoint(List<Dictionary<string, dynamic>> edits)
         {
             if (undoHistory.Count != 0) {
-                undoHistory = undoHistory.GetRange(0, undoStep + 1);
+                List<List<Dictionary<string, dynamic>>> oldHistory = undoHistory;
+				undoHistory = undoHistory.GetRange(0, undoStep + 1);
+                oldHistory.Clear();
+                oldHistory.TrimExcess();
             }
             undoHistory.Add(new List<Dictionary<string, dynamic>>(edits));
             undoStep = undoHistory.Count - 1;
