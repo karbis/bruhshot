@@ -88,7 +88,7 @@ namespace bruhshot {
 				Size size = control.Size;
 				if (size == new Size(29, 29)) break; // using 100% scaling, no fix needed
 				int minSize = Math.Min(size.Width, size.Height);
-				Image newImage = new Bitmap(minSize - 4, minSize - 4);
+				Image newImage = new Bitmap(minSize * 25 / 29, minSize * 25 / 29);
 				using (Graphics g = Graphics.FromImage(newImage)) {
 					g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 					g.InterpolationMode = InterpolationMode.HighQualityBicubic;
