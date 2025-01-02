@@ -303,6 +303,7 @@ namespace bruhshot {
 					undoButton();
 					break;
 				case Keys.Y:
+					if (currentTool != "None" && infoPanelDown) break;
 					redoButton();
 					break;
 				case Keys.A:
