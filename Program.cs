@@ -118,7 +118,7 @@ namespace bruhshot {
                 // Now you can access both, the key and virtual code
                 Keys loggedKey = e.KeyboardData.Key;
                 string key = loggedKey.ToString().ToLower();
-                if (key == Settings.Default.Keybind.ToLower()) {
+                if (_globalKeyboardHook.GetFormattedKeyCode(e.KeyboardData).ToLower() == Settings.Default.Keybind.ToLower()) {
                     startScreenshotting();
                 } else if (key == "escape") {
                     if (screenshotState != null && !screenshotState.IsDisposed) {

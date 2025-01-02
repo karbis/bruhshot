@@ -85,9 +85,8 @@ namespace bruhshot {
             if (_globalKeyboardHook != null) return;
             _globalKeyboardHook = new GlobalKeyboardHook();
             _globalKeyboardHook.KeyboardPressed += (object? sender, GlobalKeyboardHookEventArgs e) => {
-                if (e.KeyboardState != GlobalKeyboardHook.KeyboardState.KeyDown) return;
-                string loggedKey = e.KeyboardData.Key.ToString();
-                KeybindTextbox.Text = loggedKey;
+                if (e.KeyboardState != GlobalKeyboardHook.KeyboardState.KeyDown || _globalKeyboardHook.IsModifierKey(e.KeyboardData)) return;
+                KeybindTextbox.Text = _globalKeyboardHook.GetFormattedKeyCode(e.KeyboardData);
                 onKeybindTextChanged(KeybindTextbox, _);
                 _globalKeyboardHook.Dispose();
                 _globalKeyboardHook = null;

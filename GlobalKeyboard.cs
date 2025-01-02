@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace bruhshot
 {
 
-    class GlobalKeyboardHookEventArgs : HandledEventArgs
+    public class GlobalKeyboardHookEventArgs : HandledEventArgs
     {
         public GlobalKeyboardHook.KeyboardState KeyboardState { get; private set; }
         public GlobalKeyboardHook.LowLevelKeyboardInputEvent KeyboardData { get; private set; }
@@ -25,7 +25,7 @@ namespace bruhshot
     }
 
     //Based on https://gist.github.com/Stasonix
-    class GlobalKeyboardHook : IDisposable
+    public class GlobalKeyboardHook : IDisposable
     {
         public event EventHandler<GlobalKeyboardHookEventArgs> KeyboardPressed;
 
@@ -145,7 +145,10 @@ namespace bruhshot
         [DllImport("USER32", SetLastError = true)]
         static extern IntPtr CallNextHookEx(IntPtr hHook, int code, IntPtr wParam, IntPtr lParam);
 
-        [StructLayout(LayoutKind.Sequential)]
+		[DllImport("user32.dll", SetLastError = true)]
+		private static extern short GetKeyState(int nVirtKey);
+
+		[StructLayout(LayoutKind.Sequential)]
         public struct LowLevelKeyboardInputEvent
         {
             /// <summary>
@@ -178,6 +181,10 @@ namespace bruhshot
             /// Additional information associated with the message. 
             /// </summary>
             public IntPtr AdditionalInformation;
+
+            public bool ShiftPressed;
+            public bool AltPressed;
+            public bool ControlPressed;
         }
 
         public const int WH_KEYBOARD_LL = 13;
@@ -193,10 +200,31 @@ namespace bruhshot
 
         // EDT: Replaced VkSnapshot(int) with RegisteredKeys(Keys[])
         public static Keys[] RegisteredKeys;
-        const int KfAltdown = 0x2000;
-        public const int LlkhfAltdown = (KfAltdown >> 8);
+		public const int VkShift = 0x10;
+		public const int VkControl = 0x11;
+		public const int VkAlt = 0x12;
 
-        public IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam)
+        public bool IsModifierKey(LowLevelKeyboardInputEvent data) {
+            return data.Key == Keys.LShiftKey || data.Key == Keys.RShiftKey || data.Key == Keys.LControlKey || data.Key == Keys.RControlKey || data.Key == Keys.LMenu || data.Key == Keys.RMenu;
+        }
+
+		public string GetFormattedKeyCode(LowLevelKeyboardInputEvent keyboardData) {
+			string code = keyboardData.Key.ToString();
+
+			if (keyboardData.AltPressed) {
+				code = $"Alt + {code}";
+			}
+			if (keyboardData.ShiftPressed) {
+				code = $"Shift + {code}";
+			}
+			if (keyboardData.ControlPressed) {
+				code = $"Ctrl + {code}";
+			}
+
+			return code;
+		}
+
+		public IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
             bool fEatKeyStroke = false;
 
@@ -206,7 +234,20 @@ namespace bruhshot
                 object o = Marshal.PtrToStructure(lParam, typeof(LowLevelKeyboardInputEvent));
                 LowLevelKeyboardInputEvent p = (LowLevelKeyboardInputEvent)o;
 
-                var eventArguments = new GlobalKeyboardHookEventArgs(p, (KeyboardState)wparamTyped);
+                if (!IsModifierKey(p)) {
+                    p.ShiftPressed = (GetKeyState(VkShift) & 0x8000) != 0;
+                    p.AltPressed = (GetKeyState(VkAlt) & 0x8000) != 0;
+                    p.ControlPressed = (GetKeyState(VkControl) & 0x8000) != 0;
+                } else {
+                    p.ShiftPressed = p.AltPressed = p.ControlPressed = false;
+                }
+                if (wparamTyped == (Int32)KeyboardState.SysKeyDown) {
+                    wparamTyped = (Int32)KeyboardState.KeyDown;
+                } else if ( wparamTyped == (Int32)KeyboardState.SysKeyUp ) {
+                    wparamTyped = (Int32)KeyboardState.KeyUp;
+                }
+
+				var eventArguments = new GlobalKeyboardHookEventArgs(p, (KeyboardState)wparamTyped);
 
                 // EDT: Removed the comparison-logic from the usage-area so the user does not need to mess around with it.
                 // Either the incoming key has to be part of RegisteredKeys (see constructor on top) or RegisterdKeys
