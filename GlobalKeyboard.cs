@@ -211,11 +211,11 @@ namespace bruhshot
 		public string GetFormattedKeyCode(LowLevelKeyboardInputEvent keyboardData) {
 			string code = keyboardData.Key.ToString();
 
-			if (keyboardData.AltPressed) {
-				code = $"Alt + {code}";
-			}
 			if (keyboardData.ShiftPressed) {
 				code = $"Shift + {code}";
+			}
+			if (keyboardData.AltPressed) {
+				code = $"Alt + {code}";
 			}
 			if (keyboardData.ControlPressed) {
 				code = $"Ctrl + {code}";
