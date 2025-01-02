@@ -299,6 +299,7 @@ namespace bruhshot {
 				case Keys.Z:
 					if (currentTool != "None" && infoPanelDown) {
 						undoManager.makeWaypoint(edits);
+						infoPanelDown = false;
 					}
 					undoButton();
 					break;
