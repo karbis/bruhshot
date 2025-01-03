@@ -88,7 +88,9 @@ namespace bruhshot {
 				Size size = control.Size;
 				if (size == new Size(29, 29)) break; // using 100% scaling, no fix needed
 				int minSize = Math.Min(size.Width, size.Height);
-				Image newImage = new Bitmap(minSize * 25 / 29, minSize * 25 / 29);
+				int finalSize = minSize * 25 / 29;
+				finalSize -= Math.Abs(minSize % 2 - finalSize % 2); // center
+				Image newImage = new Bitmap(finalSize, finalSize);
 				using (Graphics g = Graphics.FromImage(newImage)) {
 					g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 					g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -169,6 +171,10 @@ namespace bruhshot {
 						using (Pen pen = new Pen(getFromBrushCache(v["Color"]))) {
 							pen.Width = v["Thickness"];
 							pen.DashStyle = v["Shape"] == "Dashed" ? DashStyle.Dash : DashStyle.Solid;
+							if (v["Shape"] == "Arrow") {
+								pen.StartCap = LineCap.Round;
+								pen.EndCap = LineCap.Round;
+							}
 							x = v["StartLocation"].X - location.X;
 							y = v["StartLocation"].Y - location.Y;
 							int x2 = v["EndLocation"].X - location.X;
@@ -179,11 +185,11 @@ namespace bruhshot {
 							double angle = -Math.Atan2(y2 - y, x2 - x);
 							double RAD_CONSTANT = Math.PI / 180;
 							Point lineSize = new Point(x2 - x, y2 - y);
-							double arrowSize = Math.Min(40, Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2)) / 2);
-							int offsetX = (int)(Math.Sin(angle + 71 * RAD_CONSTANT) * arrowSize);
-							int offsetY = (int)(Math.Cos(angle + 71 * RAD_CONSTANT) * arrowSize);
-							int offsetX2 = (int)(Math.Sin(angle - 71 * RAD_CONSTANT) * arrowSize);
-							int offsetY2 = (int)(Math.Cos(angle - 71 * RAD_CONSTANT) * arrowSize);
+							double arrowSize = Math.Min(Math.Clamp(pen.Width, 3, 6)*10, Math.Sqrt(Math.Pow(lineSize.X, 2) + Math.Pow(lineSize.Y, 2)) / 2.25);
+							int offsetX = (int)(Math.Sin(angle + 66 * RAD_CONSTANT) * arrowSize);
+							int offsetY = (int)(Math.Cos(angle + 66 * RAD_CONSTANT) * arrowSize);
+							int offsetX2 = (int)(Math.Sin(angle - 66 * RAD_CONSTANT) * arrowSize);
+							int offsetY2 = (int)(Math.Cos(angle - 66 * RAD_CONSTANT) * arrowSize);
 							g.DrawLine(pen, new Point(x2, y2), new Point(x2 - offsetX, y2 - offsetY));
 							g.DrawLine(pen, new Point(x2, y2), new Point(x2 + offsetX2, y2 + offsetY2));
 						}
