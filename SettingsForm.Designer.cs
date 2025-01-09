@@ -136,11 +136,10 @@
 			// 
 			ShapeSelector.DropDownStyle = ComboBoxStyle.DropDownList;
 			ShapeSelector.FormattingEnabled = true;
-			ShapeSelector.Items.AddRange(new object[] { "Circle", "Square", "Triangle" });
+			ShapeSelector.Items.AddRange(new object[] { "Square", "Circle", "Triangle" });
 			ShapeSelector.Location = new Point(188, 92);
 			ShapeSelector.Name = "ShapeSelector";
 			ShapeSelector.Size = new Size(121, 23);
-			ShapeSelector.Sorted = true;
 			ShapeSelector.TabIndex = 6;
 			// 
 			// ShapeFillCheck
@@ -225,11 +224,10 @@
 			// 
 			LineShapeDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
 			LineShapeDropdown.FormattingEnabled = true;
-			LineShapeDropdown.Items.AddRange(new object[] { "Arrow", "Dashed", "Line" });
+			LineShapeDropdown.Items.AddRange(new object[] { "Line", "Arrow", "Dashed" });
 			LineShapeDropdown.Location = new Point(188, 141);
 			LineShapeDropdown.Name = "LineShapeDropdown";
 			LineShapeDropdown.Size = new Size(121, 23);
-			LineShapeDropdown.Sorted = true;
 			LineShapeDropdown.TabIndex = 18;
 			// 
 			// label7
@@ -383,7 +381,7 @@
 			label8.Name = "label8";
 			label8.Size = new Size(51, 21);
 			label8.TabIndex = 8;
-			label8.Text = "v1.5.2";
+			label8.Text = "v1.5.3";
 			// 
 			// label9
 			// 

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using bruhshot.Properties;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 using Button = System.Windows.Forms.Button;
@@ -78,6 +78,7 @@ namespace bruhshot {
 			undoManager.makeWaypoint(edits);
 			GlobalMouseMove();
 			setupQuickSettings();
+			UpdateToolTips();
 
 			// dpi fix
 			foreach (Control control in ToolBar.Controls) {
@@ -140,6 +141,7 @@ namespace bruhshot {
 			}
 
 			g.SmoothingMode = SmoothingMode.AntiAlias;
+			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 			int x, y;
 			foreach (Dictionary<string, dynamic> v in edits) {
 				switch (v["Type"]) {
@@ -243,24 +245,18 @@ namespace bruhshot {
 				g.DrawImage(newImage, new Rectangle(0, 0, crop.Width, crop.Height), crop, GraphicsUnit.Pixel);
 				applyImageEdits(g, true);
 				/*using (Brush b = new SolidBrush(Color.FromArgb(128, 255, 255, 255))) {
-                    Font font = new Font("Arial", 10);
-                    SizeF measured = g.MeasureString("IMAGE TAKEN WITH BRUHSHOT", font);
-                    float pixelsPerEm = measured.Width / 10;
-                    float min = Math.Min(crop.Width,crop.Height)/pixelsPerEm;
-                    font.Dispose();
-                    Font newFont = new Font("Arial", min);
-                    g.DrawString("IMAGE TAKEN WITH BRUHSHOT",newFont,b,new PointF(crop.Width/2-(pixelsPerEm*min/2),crop.Height/2-measured.Height/2));
-                };*/ // not actually adding this
+					Font font = new Font("Arial", 10);
+					SizeF measured = g.MeasureString("IMAGE TAKEN WITH BRUHSHOT", font);
+					float pixelsPerEm = measured.Width / 10;
+					float min = Math.Min(crop.Width,crop.Height)/pixelsPerEm;
+					font.Dispose();
+					Font newFont = new Font("Arial", min);
+					g.DrawString("IMAGE TAKEN WITH BRUHSHOT",newFont,b,new PointF(crop.Width/2-(pixelsPerEm*min/2),crop.Height/2-measured.Height/2));
+				};*/ // not actually adding this
 			}
 			newImage = croppedImage;
 		}
 
-		Point lerpPoint(Point start, Point end, double t) {
-			int x = (int)(start.X + (end.X - start.X) * t);
-			int y = (int)(start.Y + (end.Y - start.Y) * t);
-
-			return new Point(x, y);
-		}
 		bool rectangleContains(Point point, Rectangle rectangle) {
 			return point.X >= rectangle.Left + 1 && point.X <= rectangle.Right - 1 &&
 				   point.Y >= rectangle.Top + 1 && point.Y <= rectangle.Bottom - 1;
@@ -319,11 +315,54 @@ namespace bruhshot {
 					ToolBar.Visible = true;
 					Invalidate();
 					break;
+				case Keys.Oemplus:
+				case Keys.Add:
+					IncrementZoom(1);
+					break;
+				case Keys.OemMinus:
+				case Keys.Subtract:
+					IncrementZoom(-1);
+					break;
 				default:
 					break;
 			}
 		}
 
+		void IncrementZoom(short delta) {
+			if (currentTool == "None") return;
+			if (settingsForm != null && !settingsForm.IsDisposed) return;
+			string editProperty;
+			object value;
+
+			float zoomIn(float n, float amount, float min, float max) {
+				if ((n <= min && delta == -1) || (n >= max && delta == 1)) return n;
+				float mult = 1.25f + (float)Math.Clamp((30-n+delta)/30, 0, .25);
+				mult = (mult - 1) * amount + 1;
+				float floored = (float)Math.Floor((double)((delta == 1) ? n * mult : n / mult));
+				if (floored == n) return n + delta;
+				return Math.Clamp(floored + n % 1, min, max);
+			}
+
+			if (currentTool == "Text") {
+				Font curFont = getSetting("TextFont");
+				Font font = new Font(curFont.FontFamily, zoomIn(curFont.Size, .4f, 8, 400), curFont.Style);
+				Settings.Default.TextFont = font;
+				Settings.Default.Save();
+				editProperty = "Font";
+				value = font;
+			} else {
+				Settings.Default.Thickness = (int)zoomIn(getSetting("Thickness"), 1, 1, 500);
+				Settings.Default.Save();
+				editProperty = "Thickness";
+				value = getSetting("Thickness");
+			}
+
+			int lastEditIndex = edits.Count - 1;
+			if (edits.ElementAtOrDefault(lastEditIndex) != null && edits[lastEditIndex]["Type"] == currentTool && (infoPanelDown || (currentTool == "Text" && InvisibleTextbox.Focused))) {
+				edits[lastEditIndex][editProperty] = value;
+			}
+			Invalidate();
+		}
 		void undoButton() {
 			if (InvisibleTextbox.Focused) { return; }
 			edits = undoManager.undo();
@@ -337,6 +376,16 @@ namespace bruhshot {
 
 		dynamic getSetting(string setting) {
 			return Properties.Settings.Default[setting];
+		}
+
+		public void UpdateToolTips() {
+			string curLine = getSetting("LineShape");
+			string curShape = getSetting("Shape");
+			string shapeText = getSetting("FilledShape") ? $"Filled {curShape.ToLower()}" : curShape;
+			string lineAppend = (curLine == "Line") ? "" : $" ({curLine})";
+
+			ToolTip.SetToolTip(LineTool, "Line" + lineAppend);
+			ToolTip.SetToolTip(ShapeTool, $"Shape ({shapeText})");
 		}
 
 		void undoButtonClicked(object? sender, EventArgs e) {
@@ -455,7 +504,8 @@ namespace bruhshot {
 					bool allowed = true;
 					Dictionary<string, dynamic>? lastIndex = (edits.Count >= 1) ? edits[edits.Count - 1] : null;
 					if (lastIndex != null && lastIndex["Type"] == "Text") {
-						if (new Rectangle(lastIndex["Location"], (Size)TextRenderer.MeasureText(lastIndex["Text"], lastIndex["Font"])).Contains(e.Location)) {
+						Size size = GetTextboxSize(lastIndex["Text"], lastIndex["Font"]);
+						if (new Rectangle(lastIndex["Location"], size).Contains(e.Location)) {
 							allowed = false;
 						}
 					}
@@ -592,27 +642,76 @@ namespace bruhshot {
 			return new Rectangle[8] { rect1, rect2, rect3, rect4, rect5, rect6, rect7, rect8 };
 		}
 
+		Size GetTextboxSize(string text, Font font, Graphics? g = null) {
+			SizeF textSize = (g != null) ? g.MeasureString(text, font) : TextRenderer.MeasureText(text, font);
+			return new Size(Math.Max(50, (int)textSize.Width), Math.Max(25, (int)textSize.Height));
+		}
+
+		GraphicsPath CreateRoundedRect(Rectangle rect, int radius) {
+			GraphicsPath path = new GraphicsPath();
+
+			if (radius <= 0) {
+				path.StartFigure();
+				path.AddRectangle(rect);
+				path.CloseFigure();
+				return path;
+			}
+
+			path.StartFigure();
+			int diameter = radius * 2;
+			diameter = Math.Min(diameter, Math.Min(rect.Width, rect.Height));
+			path.AddArc(rect.X, rect.Y, diameter, diameter, 180, 90);
+			path.AddArc(rect.X + rect.Width - diameter, rect.Y, diameter, diameter, 270, 90);
+			path.AddArc(rect.X + rect.Width - diameter, rect.Y + rect.Height - diameter, diameter, diameter, 0, 90);
+			path.AddArc(rect.X, rect.Y + rect.Height - diameter, diameter, diameter, 90, 90);
+			path.CloseFigure();
+
+			return path;
+		}
+
 		Font resolutionDisplayFont = new Font("Arial", 10, FontStyle.Bold);
 		void imageDarken(object? sender, PaintEventArgs e) {
+			e.Graphics.SmoothingMode = SmoothingMode.HighSpeed;
+			e.Graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+
 			e.Graphics.DrawImage(image, ClientRectangle);
 			//base.OnPaint(e);
 			Rectangle regionRectangle = getCropRectangle();
 			Region oldClip = e.Graphics.Clip.Clone();
 			string resolutionString = regionRectangle.Width + "x" + regionRectangle.Height;
 			SizeF resolutionTextSize = e.Graphics.MeasureString(resolutionString, resolutionDisplayFont);
-			Point resolutionDrawPoint = new Point(regionRectangle.X, regionRectangle.Y - (int)resolutionTextSize.Height - 6);
+			Point resolutionDrawPoint = new Point(regionRectangle.X, regionRectangle.Y - (int)resolutionTextSize.Height - 7);
 			if (resolutionDrawPoint.Y < 0) {
-				resolutionDrawPoint.Y = regionRectangle.Bottom + 5;
-				if (resolutionDrawPoint.Y > Size.Height - (int)resolutionTextSize.Height - 6) {
-					resolutionDrawPoint.Y = 5;
+				resolutionDrawPoint.Y = regionRectangle.Bottom + 7;
+				if (resolutionDrawPoint.Y > Size.Height - (int)resolutionTextSize.Height - 7) {
+					if (regionRectangle.X - resolutionTextSize.Width - 5 > 0) {
+						resolutionDrawPoint.X = regionRectangle.X - (int)resolutionTextSize.Width - 5;
+					} else {
+						resolutionDrawPoint.X = regionRectangle.X + 6;
+					}
+					if (regionRectangle.X + regionRectangle.Width + ToolBar.Width + 5 > Width && ToolBar.Visible && regionRectangle.X - resolutionTextSize.Width - 5 > 0) {
+						resolutionDrawPoint.Y = ToolBar.Location.Y + ToolBar.Height + 1;
+					} else {
+						resolutionDrawPoint.Y = 6;
+					}
 				}
 			}
+			if (resolutionDrawPoint.X+resolutionTextSize.Width > Size.Width) {
+				resolutionDrawPoint.X = (int)(Size.Width - resolutionTextSize.Width - 1);
+			}
 
-			using (Brush brush = new SolidBrush(Color.FromArgb(128, Color.Black))) {
-				if (endingClickPoint.X != -1) {
-					e.Graphics.FillRectangle(brush, new Rectangle(resolutionDrawPoint, new Size((int)resolutionTextSize.Width, (int)resolutionTextSize.Height + 1)));
+			if (endingClickPoint.X != -1) {
+				using (Brush brush = new SolidBrush(Color.FromArgb(150, Color.Black))) {
+					e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+					e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+					e.Graphics.FillPath(brush, CreateRoundedRect(new Rectangle(resolutionDrawPoint, new Size((int)resolutionTextSize.Width, (int)resolutionTextSize.Height + 1)), 2));
+					e.Graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+					e.Graphics.SmoothingMode = SmoothingMode.HighSpeed;
+
 					e.Graphics.ExcludeClip(regionRectangle);
 				}
+			}
+			using (Brush brush = new SolidBrush(Color.FromArgb(128, Color.Black))) {
 				e.Graphics.FillRectangle(brush, ClientRectangle);
 			}
 			e.Graphics.Clip = oldClip;
@@ -629,15 +728,25 @@ namespace bruhshot {
 				if (InvisibleTextbox.Focused) {
 					Dictionary<string, dynamic> lastIndex = edits[edits.Count - 1];
 					Point textLocation = lastIndex["Location"];
-					dashedPen.Width = 1f;
-					dashedPen.Color = Color.FromArgb(128, Color.LightGray);
-					SizeF textSize = e.Graphics.MeasureString(lastIndex["Text"], lastIndex["Font"]);
-					e.Graphics.DrawRectangle(dashedPen, new Rectangle(textLocation.X - 1, textLocation.Y - 1, Math.Max(50, (int)textSize.Width), Math.Max(25, (int)textSize.Height)));
+					Size textBoxSize = GetTextboxSize(lastIndex["Text"], lastIndex["Font"], e.Graphics);
+					Rectangle rect = new Rectangle(textLocation.X - 1, textLocation.Y - 1, textBoxSize.Width, textBoxSize.Height);
+					dashedPen.Width = 1.2f;
+					dashedPen.Color = Color.FromArgb(160, Color.LightGray);
+
+					using (Pen secondaryPen = new Pen(Color.Black)) {
+						secondaryPen.Width = 1.2f;
+						secondaryPen.Color = Color.FromArgb(32, Color.DarkGray);
+						e.Graphics.DrawRectangle(secondaryPen, rect);
+					}
+
+					e.Graphics.DrawRectangle(dashedPen, rect);
 				}
 
 				dashedPen.Dispose();
 
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
 				using (Brush brush = new SolidBrush(Color.White)) {
+					resolutionDrawPoint.X += 1;
 					e.Graphics.DrawString(resolutionString, resolutionDisplayFont, brush, resolutionDrawPoint);
 				}
 				using (Pen pen = new Pen(Color.LightGray)) {
@@ -666,16 +775,17 @@ namespace bruhshot {
 			int offsetX = regionRectangle.Width + 5;
 			int offsetY = -2;
 			if (regionRectangle.Y + ToolBar.Size.Height > Size.Height) {
-				offsetY = -ToolBar.Size.Height - 5;
+				//offsetY = -ToolBar.Size.Height - 5;
+				offsetY = regionRectangle.Height - ToolBar.Size.Height - 5;
 				if (regionRectangle.Y + offsetY < 0) {
-					offsetY = Size.Height - 5 - ToolBar.Size.Height;
+					offsetY = -regionRectangle.Y + 5;
 				}
 			}
-			if (regionRectangle.Right + 30 > Size.Width) {
-				offsetX = -30;
-				if (regionRectangle.X - 30 < 0) {
+			if (regionRectangle.Right + 34 > Size.Width) {
+				offsetX = -34;
+				if (regionRectangle.X - ToolBar.Width < 0) {
 					//offsetY = regionRectangle.Height + 5;
-					offsetX = Size.Width - 30;
+					offsetX = -regionRectangle.X + Size.Width - ToolBar.Width - 5;
 				}
 			}
 			ToolBar.Location = new Point(regionRectangle.X + offsetX, regionRectangle.Y + offsetY);
@@ -691,7 +801,7 @@ namespace bruhshot {
 		void promptToSave() {
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-			saveFileDialog.Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|WebP Files (*.webp)|*.webp|BMP Files (*.bmp)|*.bmp|All Files (*.*)|*.*";
+			saveFileDialog.Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|WebP (*.webp)|*.webp|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (*.tiff)|*.tiff|All Files (*.*)|*.*";
 			saveFileDialog.Title = "Save Screenshot";
 			saveFileDialog.DefaultExt = "png";
 			saveFileDialog.AddExtension = true;

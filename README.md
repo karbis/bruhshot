@@ -9,3 +9,4 @@ A ripoff of Lightshot, made in winforms, sadly.
 - Ctrl+Z/Y to undo/redo
 - Shift while making a line/shape/crop region to snap it to 15° / make it square
 - Ctrl+A to select entire screen
+- Ctrl+Plus/Minus to increase/decrease the size of the tool you are using

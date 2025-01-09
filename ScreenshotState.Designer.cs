@@ -43,7 +43,7 @@ namespace bruhshot {
 			PenTool = new Button();
 			Seperator2 = new Panel();
 			InvisibleTextbox = new TextBox();
-			toolTip1 = new ToolTip(components);
+			ToolTip = new ToolTip(components);
 			ToolBar.SuspendLayout();
 			QuickSettingsStrip.SuspendLayout();
 			SuspendLayout();
@@ -79,7 +79,7 @@ namespace bruhshot {
 			CloseButton.Name = "CloseButton";
 			CloseButton.Size = new Size(29, 29);
 			CloseButton.TabIndex = 12;
-			toolTip1.SetToolTip(CloseButton, "Cancel");
+			ToolTip.SetToolTip(CloseButton, "Cancel");
 			CloseButton.UseVisualStyleBackColor = true;
 			// 
 			// SettingsButton
@@ -92,7 +92,7 @@ namespace bruhshot {
 			SettingsButton.Name = "SettingsButton";
 			SettingsButton.Size = new Size(29, 29);
 			SettingsButton.TabIndex = 11;
-			toolTip1.SetToolTip(SettingsButton, "Settings");
+			ToolTip.SetToolTip(SettingsButton, "Settings");
 			SettingsButton.UseVisualStyleBackColor = true;
 			// 
 			// QuickSettingsStrip
@@ -122,7 +122,7 @@ namespace bruhshot {
 			ShapeTool.Name = "ShapeTool";
 			ShapeTool.Size = new Size(29, 29);
 			ShapeTool.TabIndex = 10;
-			toolTip1.SetToolTip(ShapeTool, "Shape");
+			ToolTip.SetToolTip(ShapeTool, "Shape");
 			ShapeTool.UseVisualStyleBackColor = true;
 			// 
 			// RedoButton
@@ -134,7 +134,7 @@ namespace bruhshot {
 			RedoButton.Name = "RedoButton";
 			RedoButton.Size = new Size(29, 29);
 			RedoButton.TabIndex = 9;
-			toolTip1.SetToolTip(RedoButton, "Redo");
+			ToolTip.SetToolTip(RedoButton, "Redo");
 			RedoButton.UseVisualStyleBackColor = true;
 			// 
 			// UndoButton
@@ -146,7 +146,7 @@ namespace bruhshot {
 			UndoButton.Name = "UndoButton";
 			UndoButton.Size = new Size(29, 29);
 			UndoButton.TabIndex = 8;
-			toolTip1.SetToolTip(UndoButton, "Undo");
+			ToolTip.SetToolTip(UndoButton, "Undo");
 			UndoButton.UseVisualStyleBackColor = true;
 			// 
 			// Seperator1
@@ -167,7 +167,7 @@ namespace bruhshot {
 			LineTool.Name = "LineTool";
 			LineTool.Size = new Size(29, 29);
 			LineTool.TabIndex = 6;
-			toolTip1.SetToolTip(LineTool, "Line");
+			ToolTip.SetToolTip(LineTool, "Line");
 			LineTool.UseVisualStyleBackColor = true;
 			// 
 			// TextTool
@@ -179,7 +179,7 @@ namespace bruhshot {
 			TextTool.Name = "TextTool";
 			TextTool.Size = new Size(29, 29);
 			TextTool.TabIndex = 5;
-			toolTip1.SetToolTip(TextTool, "Text");
+			ToolTip.SetToolTip(TextTool, "Text");
 			TextTool.UseVisualStyleBackColor = true;
 			// 
 			// ClipboardButton
@@ -191,7 +191,7 @@ namespace bruhshot {
 			ClipboardButton.Name = "ClipboardButton";
 			ClipboardButton.Size = new Size(29, 29);
 			ClipboardButton.TabIndex = 4;
-			toolTip1.SetToolTip(ClipboardButton, "Copy to clipboard");
+			ToolTip.SetToolTip(ClipboardButton, "Copy to clipboard");
 			ClipboardButton.UseVisualStyleBackColor = true;
 			// 
 			// SaveButton
@@ -203,7 +203,7 @@ namespace bruhshot {
 			SaveButton.Name = "SaveButton";
 			SaveButton.Size = new Size(29, 29);
 			SaveButton.TabIndex = 3;
-			toolTip1.SetToolTip(SaveButton, "Save");
+			ToolTip.SetToolTip(SaveButton, "Save");
 			SaveButton.UseVisualStyleBackColor = true;
 			// 
 			// PenTool
@@ -215,7 +215,7 @@ namespace bruhshot {
 			PenTool.Name = "PenTool";
 			PenTool.Size = new Size(29, 29);
 			PenTool.TabIndex = 2;
-			toolTip1.SetToolTip(PenTool, "Pen");
+			ToolTip.SetToolTip(PenTool, "Pen");
 			PenTool.UseVisualStyleBackColor = true;
 			// 
 			// Seperator2
@@ -266,7 +266,7 @@ namespace bruhshot {
         private Button ClipboardButton;
         private Button TextTool;
         private TextBox InvisibleTextbox;
-        private ToolTip toolTip1;
+        private ToolTip ToolTip;
         private Button LineTool;
         private Button RedoButton;
         private Button UndoButton;
