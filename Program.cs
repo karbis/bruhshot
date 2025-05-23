@@ -63,7 +63,10 @@ namespace bruhshot {
             screenshotButton.Text = "Screenshot";
             screenshotButton.Click += startScreenshottingSender;
 
-            var exitButton = new ToolStripMenuItem();
+            DelayedActionDropDown delayedScreenshot = new DelayedActionDropDown("Delayed screenshot", new int[] { 1, 2, 3, 5, 10, 15, 30 }, startScreenshotting);
+			contextMenu.Items.AddRange(new ToolStripItem[] { screenshotButton, delayedScreenshot, new ToolStripSeparator() });
+
+			var exitButton = new ToolStripMenuItem();
             exitButton.Text = "Exit";
             exitButton.Click += Exit;
 
@@ -76,7 +79,7 @@ namespace bruhshot {
                 settingForm.Show();
             };
 
-            contextMenu.Items.AddRange(new ToolStripItem[] { screenshotButton, settingsButton, exitButton });
+            contextMenu.Items.AddRange(new ToolStripItem[] { settingsButton, exitButton });
 
             _globalKeyboardHook = new GlobalKeyboardHook();
             _globalKeyboardHook.KeyboardPressed += OnKeyPressed;

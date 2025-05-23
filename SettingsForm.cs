@@ -4,6 +4,7 @@
 			Font font = Properties.Settings.Default.TextFont;
 			FontText.Text = font.Name + ", " + font.SizeInPoints + "pt";
 		}
+
 		void SetUpCheckbox(CheckBox check, string settingName) {
 			check.Checked = (bool)Properties.Settings.Default[settingName];
 			check.CheckedChanged += (object? sender, EventArgs e) => {
@@ -15,13 +16,14 @@
 				}
 			};
 		}
+
 		void UpdateToolTips() {
 			if (ScreenshotState.ActiveForm == null) return;
 			ScreenshotState form = (ScreenshotState)ScreenshotState.ActiveForm;
 			form.UpdateToolTips();
 		}
-		public bool DialogOpen = false;
 
+		public bool DialogOpen = false;
 		public SettingsForm() {
 			TopMost = true;
 			InitializeComponent();

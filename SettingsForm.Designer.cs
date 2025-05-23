@@ -381,7 +381,7 @@
 			label8.Name = "label8";
 			label8.Size = new Size(51, 21);
 			label8.TabIndex = 8;
-			label8.Text = "v1.5.3";
+			label8.Text = "v1.5.4";
 			// 
 			// label9
 			// 
